@@ -8,6 +8,7 @@
   "dependencies": {
     "jsqr": "^1.0.4",
     "vue": "^2.5.16",
-    "vue-router": "^3.0.1"
+    "vue-router": "^3.0.1",
+    "web3": "^1.0.0-beta.34"
   }
 }
