@@ -13,7 +13,7 @@ const app = new Vue({
 		let provider = new Web3.providers.HttpProvider(this.config.provider);
 		Vue.prototype.web3 = new Web3(provider);
 		*/
-	,
+	},
 	components: {
 		"alert": Alert
 	}
