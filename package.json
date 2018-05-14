@@ -1,0 +1,13 @@
+{
+  "name": "labcoin-app",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@beeva.github.com:beeva-labs/labcoin-app.git",
+  "author": "Beeva Labs",
+  "license": "MIT",
+  "dependencies": {
+    "jsqr": "^1.0.4",
+    "vue": "^2.5.16",
+    "vue-router": "^3.0.1"
+  }
+}
