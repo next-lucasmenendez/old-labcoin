@@ -1,6 +1,7 @@
 const app = new Vue({
 	el: "#app",
 	template: 	`<section id="labcoin">
+					<topbar></topbar>
 					<router-view></router-view>
 					<alert></alert>
 				</section>`,
@@ -15,6 +16,7 @@ const app = new Vue({
 		*/
 	},
 	components: {
+		"topbar": Topbar,
 		"alert": Alert
 	}
 });
