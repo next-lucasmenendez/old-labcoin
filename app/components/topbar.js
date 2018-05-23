@@ -2,7 +2,7 @@ let Topbar = Vue.component("topbar", {
 	template:	`<nav class="sb-width-100 sb-bg-black sb-text-white">
 					<div class="sb-grid sb-justify-between sb-align-center">
 						<div class="sb-col-auto sb-padding-2">
-							<img class="logo-event" v-bind:src="logoevent">
+							<router-link :to="{ name: 'home' }"><img class="logo-event" v-bind:src="logoevent"></router-link>
 						</div>
 						<div class="sb-col-auto sb-padding-2">
 							<img class="logo-coin" v-bind:src="logocoin">

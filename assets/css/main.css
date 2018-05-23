@@ -115,6 +115,7 @@ h6, .sb-h6 {
     border: none;
     border-bottom: 1px solid #bdbdba;
     color: #f3f1f0;
+    font-size: 16px;
     font-family: inherit;
     z-index: 1;
     transition: all .1s ease-in-out; }
@@ -464,5 +465,27 @@ hr {
 
 .sb-zindex-10 {
   z-index: 10; }
+
+.sb-counter {
+  display: inline-block;
+  vertical-align: top;
+  width: 100%;
+  height: auto;
+  text-align: center; }
+  .sb-counter span {
+    font-size: 1.8em;
+    height: 16vh;
+    width: 16vh;
+    border: 1px solid #2dcccd; }
+  .sb-counter.sb-boder-aqua span {
+    border-color: #2dcccd; }
+  .sb-counter.sb-boder-blue span {
+    border-color: #1973b8; }
+  .sb-counter.sb-boder-purple span {
+    border-color: #8f7ae5; }
+  .sb-counter.sb-boder-pink span {
+    border-color: #c569b9; }
+  .sb-counter.sb-boder-black span {
+    border-color: #000000; }
 
 /*# sourceMappingURL=main.css.map */

@@ -12,7 +12,7 @@ Router.beforeEach((to, from, next) => {
 	const $storage = new Storage();
 
 	let user = $storage.get("user");
-	if (!user.id && to.path !== "/signup") {
+	if (!user && to.path !== "/signup") {
 		next("signup");
 	} else {
 		next();

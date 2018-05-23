@@ -10,6 +10,27 @@ const SignUp = Vue.component("signup", {
 						<signup-form></signup-form>
 					</div>
 				</section>`,
+	mounted() {
+		this.$on("signin", data => {
+			if (data.username) {
+				data.password = this.generatePassword();
+				data.address = this.$web3.personal.newAccount(data.password)
+					
+				this.$web3.personal.unlockAccount(data.address, data.password);
+				this.$web3.eth.defaultAccount = data.address;
+
+				console.log(data);
+
+				this.$storage.set("user", data);
+				Router.push({ name: "home" });
+			}
+		});
+	},
+	methods: {
+		generatePassword() {
+			return Math.floor((Math.random() * 99999999) + 10000000) + "";
+		}
+	},
 	components: {
 		"signup-form": SignupForm
 	}

@@ -1,10 +1,27 @@
 let SBInput = Vue.component("sb-input",  {
 	template:  `<div class="sb-input" v-bind:class="cclass">
-					<input v-bind:type="type" placeholder=" " v-bind:pattern="pattern">
-					<label v-if="label">{{ label }}</label>
-					<span v-if="invalid">{{ invalid }}</span>
+					<input 	:type="type" 
+							:pattern="pattern" 
+							:name="name" 
+							:autocomplete="autocomplete ? 'on' : 'off'"
+							v-model="value" 
+							@change="$parent.$emit('change', { name, value })" 
+							placeholder=" ">
+
+					<label 	v-if="label" 
+							:for="name"> 
+								{{ label }}
+					</label>
+					
+					<span v-if="invalid">
+						{{ invalid }}
+					</span>
 				</div>`,
 	props: {
+		name: {
+			type: String,
+			required: true
+		},
 		cclass: {
 			type: String,
 			required: false
@@ -26,5 +43,18 @@ let SBInput = Vue.component("sb-input",  {
 			type: String,
 			required: false
 		},
+		autocomplete: {
+			type: Boolean,
+			default: false
+		},
+		model: {
+			type: String,
+			required: false
+		}
+	},
+	data() {
+		return {
+			value: this.model
+		}
 	}
-})
+});
