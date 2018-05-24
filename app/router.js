@@ -3,8 +3,7 @@ const Router = new VueRouter({
 	routes: [
 		{ name: "home", path: "/", component: Home },
 		{ name: "signup", path: "/signup", component: SignUp },
-		{ name: "scan", path: "/scan", component: Scan },
-		{ name: "pay", path: "/pay", component: Pay },
+		{ name: "scan", path: "/scan", component: Scan }
 	]
 });
 

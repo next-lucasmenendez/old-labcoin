@@ -1,5 +1,5 @@
 let Alert = Vue.component("alert", {
-	template:	`<div 	class="sb-toast" 
+	template:	`<div 	class="sb-toast sb-shadow" 
 						:class="[ { 'sb-toast-show': show }, type ]" 
 						:style="styleObject"s>
 							{{ message }}
@@ -26,11 +26,12 @@ let Alert = Vue.component("alert", {
 		}
 	},
 	created() {
-		this.$eventbus.$on("alert", ({ type, message }) => {
-			if (this.types.indexOf(type) !== -1) this.alert(type, message);
-		});
+		this.$eventbus.$on("alert", this.alertHandler);
 	},
 	methods: {
+		alertHandler({ type, message }) {
+			if (this.types.indexOf(type) !== -1) this.alert(type, message);
+		},
 		alert(type, message) {
 			this.type = `sb-toast-${ type }`;
 			this.message = message;

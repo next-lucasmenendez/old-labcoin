@@ -30,9 +30,12 @@ const SignupForm = Vue.component("signup-form", {
 		}
 	},
 	created() {
-		this.$on("change", data => {
+		this.$on("change", this.changeHandler);
+	},
+	methods: {
+		changeHandler(data) {
 			this.fields[data.name] = data.value;
-		});
+		}
 	},
 	components: {
 		"sb-input": SBInput
