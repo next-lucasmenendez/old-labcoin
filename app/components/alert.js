@@ -1,6 +1,8 @@
 let Alert = Vue.component("alert", {
-	template:	`<div v-bind:class="[ { show: show }, type ]" v-bind:style="styleObject">
-					{{ message }}
+	template:	`<div 	class="sb-toast" 
+						:class="[ { 'sb-toast-show': show }, type ]" 
+						:style="styleObject"s>
+							{{ message }}
 				</div>`,
 	props: {
 		timeout: {
@@ -30,9 +32,8 @@ let Alert = Vue.component("alert", {
 	},
 	methods: {
 		alert(type, message) {
-			this.type = `alert-${ type }`;
+			this.type = `sb-toast-${ type }`;
 			this.message = message;
-
 			this.in().then(this.out);
 		},
 		in() {

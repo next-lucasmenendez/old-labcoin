@@ -2,34 +2,44 @@ const app = new Vue({
 	el: "#app",
 	template: 	`<section id="labcoin">
 					<topbar></topbar>
-					<router-view></router-view>
+					<transition name="slideInUp">
+						<router-view ></router-view>
+					</transition>
 					<alert></alert>
 				</section>`,
 	router: Router,
 	data: { 
 		config,
-		contract: null
+		contract: null,
+		instance: null
 	},
 	created() {
 		Vue.prototype.$eventbus = new Vue();
 		Vue.prototype.$storage = new Storage();
+
 		/** Web3 instance */
 		let provider = new Web3.providers.HttpProvider(this.config.provider);
 		Vue.prototype.$web3 = new Web3(provider);
-		Vue.prototype.MyContract = null;
-		
+
+		/** Contract instance */
 		if (this.$web3.isConnected()) {
 			this.getContract()
 				.then(contract => {
-					Vue.prototype.MyContract = contract;
+					this.contract = TruffleContract(contract);
+					this.contract.setProvider(this.$web3.currentProvider);
 				})
-				.catch(console.error)
+				.then(() => this.$eventbus.$emit("contractReady"))
+				.catch(err => {
+					console.error(err);
+					this.$eventbus.$emit({
+						type: "danger",
+						message: "Error getting contract instance ;("
+					});
+				});
 		}
 
-		//var EventTicketArtifact = data;
-      	//App.contracts.EventTicket = TruffleContract(EventTicketArtifact); //Change to Web3
+		this.$eventbus.$on("getContractInstance", this.getContractInstance);
 	},
-
 	methods: {
 		getContract() {
 			return new Promise((resolve, reject) => {
@@ -38,11 +48,23 @@ const app = new Vue({
 
 				fetch(this.config.contractUri, { headers })
 					.then(res => res.json())
-					.then(json => {
-						resolve(new this.$web3.eth.contract(json))
-					})
+					.then(resolve)
 					.catch(reject)
 			});
+		},
+		getContractInstance() {
+				this.contract.deployed().then(instance => {
+					this.instance = instance;
+					this.$eventbus.$emit("contractInstance", instance)
+				})
+				.catch(err => {
+					console.error(err);
+					this.$eventbus.$emit("alert", {
+						type: "danger",
+						message: "Error getting contract instance"
+					});
+				})
+			
 		}
 	},
 	components: {

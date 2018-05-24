@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css?family=IBM+Plex+Mono|IBM+Plex+Sans");
+@import url("https://fonts.googleapis.com/css?family=IBM+Plex+Mono|IBM+Plex+Sans:300,400,700");
 .sb-bg-white {
   background: #f3f1f0; }
 
@@ -141,7 +141,7 @@ h6, .sb-h6 {
       content: '* '; }
 
 .sb-button {
-  display: block;
+  display: inline-block;
   vertical-align: top;
   width: auto;
   height: auto;
@@ -154,7 +154,12 @@ h6, .sb-h6 {
   border-radius: 4px;
   cursor: pointer;
   font-size: 1em;
-  transition: all .2s ease-in-out; }
+  transition: all .2s ease-in-out;
+  text-decoration: none;
+  text-transform: none; }
+  .sb-button.sb-button-large {
+    padding: 16px 32px;
+    font-size: 1.2em; }
   .sb-button:hover, .sb-button:active {
     color: #2dcccd;
     background: transparent; }
@@ -466,6 +471,16 @@ hr {
 .sb-zindex-10 {
   z-index: 10; }
 
+.sb-inline {
+  display: inline; }
+
+.sb-inline-block {
+  display: inline-block;
+  vertical-align: top; }
+
+.sb-block {
+  display: block; }
+
 .sb-counter {
   display: inline-block;
   vertical-align: top;
@@ -473,10 +488,25 @@ hr {
   height: auto;
   text-align: center; }
   .sb-counter span {
-    font-size: 1.8em;
+    display: inline-block;
+    vertical-align: top;
+    font-size: 3em;
     height: 16vh;
     width: 16vh;
+    border-radius: 50%;
+    line-height: 16vh;
+    text-align: center;
+    color: #2dcccd;
+    font-weight: 300;
     border: 1px solid #2dcccd; }
+  .sb-counter label {
+    display: block;
+    width: 100%;
+    height: auto;
+    padding: 16px 24px;
+    text-align: center;
+    color: #2dcccd;
+    font-size: 1.8em; }
   .sb-counter.sb-boder-aqua span {
     border-color: #2dcccd; }
   .sb-counter.sb-boder-blue span {
@@ -487,5 +517,24 @@ hr {
     border-color: #c569b9; }
   .sb-counter.sb-boder-black span {
     border-color: #000000; }
+
+.sb-toast {
+  display: inline-block;
+  vertical-align: top;
+  padding: 16px 24px;
+  background: #2dcccd;
+  color: #000000;
+  border-radius: 4px;
+  transition: all .2s ease-in-out;
+  opacity: 0;
+  visibility: visible;
+  box-shadow: 0px 5px 10px -3px black; }
+  .sb-toast.sb-toast-warning {
+    background: #58beff; }
+  .sb-toast.sb-toast-danger {
+    background: #ff0054; }
+  .sb-toast.sb-toast-show {
+    opacity: 1;
+    visibility: visible; }
 
 /*# sourceMappingURL=main.css.map */

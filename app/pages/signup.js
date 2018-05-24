@@ -19,9 +19,11 @@ const SignUp = Vue.component("signup", {
 				this.$web3.personal.unlockAccount(data.address, data.password);
 				this.$web3.eth.defaultAccount = data.address;
 
-				console.log(data);
-
 				this.$storage.set("user", data);
+				this.$eventbus.$emit("alert",  {
+					type: "success",
+					message: `Welcome ${ data.username }!`
+				});
 				Router.push({ name: "home" });
 			}
 		});
