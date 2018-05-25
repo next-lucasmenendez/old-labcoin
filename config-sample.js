@@ -1,3 +1,5 @@
-let config = {
-	provider: "<provider-uri>"
+const config = {
+	provider: "<provider uri>",
+	contractUri: "<contract json>",
+	contractAddress: "<contract address>"
 }

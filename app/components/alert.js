@@ -1,6 +1,8 @@
 let Alert = Vue.component("alert", {
-	template:	`<div v-bind:class="[ { show: show }, type ]" v-bind:style="styleObject">
-					{{ message }}
+	template:	`<div 	class="sb-toast sb-shadow" 
+						:class="[ { 'sb-toast-show': show }, type ]" 
+						:style="styleObject"s>
+							{{ message }}
 				</div>`,
 	props: {
 		timeout: {
@@ -24,15 +26,15 @@ let Alert = Vue.component("alert", {
 		}
 	},
 	created() {
-		this.$eventbus.$on("alert", ({ type, message }) => {
-			if (this.types.indexOf(type) !== -1) this.alert(type, message);
-		});
+		this.$eventbus.$on("alert", this.alertHandler);
 	},
 	methods: {
+		alertHandler({ type, message }) {
+			if (this.types.indexOf(type) !== -1) this.alert(type, message);
+		},
 		alert(type, message) {
-			this.type = `alert-${ type }`;
+			this.type = `sb-toast-${ type }`;
 			this.message = message;
-
 			this.in().then(this.out);
 		},
 		in() {
