@@ -3,7 +3,7 @@ const app = new Vue({
 	template: 	`<section id="labcoin">
 					<topbar></topbar>
 					<transition name="fade">
-						<router-view ></router-view>
+						<router-view></router-view>
 					</transition>
 					<alert></alert>
 				</section>`,
@@ -37,10 +37,10 @@ const app = new Vue({
 	methods: {
 		getArtifact() {
 			return new Promise((resolve, reject) => {
-				let headers = new Headers();
-				headers.append("Accept", "application/vnd.github.v3.raw");
+				//let headers = new Headers();
+				//headers.append("Accept", "application/vnd.github.v3.raw");
 
-				fetch(this.config.contractUri, { headers })
+				fetch(this.config.contractUri)
 					.then(res => res.json())
 					.then(resolve)
 					.catch(reject)
