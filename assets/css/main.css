@@ -44,6 +44,9 @@ pre, .code {
 .sb-text-white {
   color: #f3f1f0 !important; }
 
+.sb-text-gray {
+  color: #64615e !important; }
+
 .sb-text-black {
   color: #1d1c1d !important; }
 
@@ -523,13 +526,13 @@ h6, .sb-h6 {
     display: block;
     width: 100%;
     margin: 16px 0; }
-  .sb-button:hover, .sb-button:active {
+  .sb-button:hover, .sb-button:active, .sb-button.active {
     color: #2dcccd;
     background: transparent; }
   .sb-button.sb-button-outline {
     color: #2dcccd;
     background: transparent; }
-    .sb-button.sb-button-outline:hover, .sb-button.sb-button-outline:active {
+    .sb-button.sb-button-outline:hover, .sb-button.sb-button-outline:active, .sb-button.sb-button-outline.active {
       background: #2dcccd;
       color: #1d1c1d; }
 
@@ -538,7 +541,8 @@ h6, .sb-h6 {
   vertical-align: top;
   width: 100%;
   height: auto;
-  text-align: center; }
+  text-align: center;
+  transition: all .2s ease-in-out; }
   .sb-counter span {
     display: inline-block;
     vertical-align: top;

@@ -1,29 +1,59 @@
 const QRReader = Vue.component("qr-reader", {
-	template:	`<div class="sb-inline-block" :style="containerStyles">
-					<div :style="videoStyles">
-						<video id="preview"></video>
+	template:	`<div>
+					<div class="sb-inline-block" :style="containerStyles">
+						<p class="sb-text-gray" v-if="cameras.length == 0" :style="messageStyle">No camera detected.</p>
+						<div :style="videoStyles">
+							<video autoplay></video>
+						</div>
+					</div>
+					<div v-if="cameras.lenth > 1" class="sb-margin-2">
+						<button type="button" 
+								class="sb-button sb-margin-2"
+								:class="{ active: camera.id == current }" 
+								v-for="camera in cameras"
+								@click="changeCamera(camera)">
+									{{ camera.name }}
+						</button>
 					</div>
 				</div>`,
-	created() {
-        this.$parent.$on("closeCamera", () => {
-			Instascan.Camera.getCameras()
-				.then(cameras => {
-					if (cameras.length > 0) {
-						scanner.stop(cameras[0]);
-					} else {
-						console.error('No cameras found.');
-					}
+	mounted() {
+		let video = this.$el.querySelector("video");
+		this.qr = new Instascan.Scanner({ video });
+		this.qr.addListener("scan", this.codeHandler);
+
+		Instascan.Camera.getCameras()
+			.then(cameras => {
+				if (cameras.length > 0) {
+					let last = cameras[cameras.length - 1];
+
+					this.cameras = cameras;
+					this.current = last.id;
+					this.qr.stop().then(() => this.qr.start(last));
+				}
 			})
-			.catch(console.error);        
-        });
+			.catch(console.error);
+
+        this.$parent.$on("closeCamera", () => this.qr.stop());
 	},
 	data() {
 		return {
+			qr: null,
+			current: null,
+			cameras: [],
 			containerStyles: {
 				position: "relative",
 				width: "80vw",
 				height: "80vw",
 				overflow: "hidden"
+			},
+			messageStyle: {
+				position: "absolute",
+				top: "50%",
+				left: "0",
+				width: "100%",
+				height: "auto",
+				textAlign: "center",
+				transform: "translateY(-50%)"
 			},
 			videoStyles: {
 				position: "absolute",
@@ -35,26 +65,13 @@ const QRReader = Vue.component("qr-reader", {
 			}
 		}
 	},
-	mounted() {
-		let scanner = new Instascan.Scanner({
-			continuous: true,
-			video: document.getElementById('preview'),
-			backgroundScan: true,
-			scanPeriod: 1,
-			mirror: true
-		});
-
-		scanner.addListener('scan', content => {
-			console.log(content);
-            this.$parent.$emit("productScanned", content);
-		});
-
-		Instascan.Camera.getCameras().then(function(cameras) {
-			if (cameras.length > 0) {
-				scanner.start(cameras[1]).catch(console.log);
-			} else {
-				console.error('No cameras found.');
-			}
-		}).catch(console.error);
+	methods: {
+		codeHandler(content) {
+			this.$parent.$emit("productScanned", content);
+		},
+		changeCamera(camera) {
+			this.current = camera.id;
+			this.qr.stop().then(() => this.qr.start(camera));
+		}
 	}
 });

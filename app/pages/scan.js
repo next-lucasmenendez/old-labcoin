@@ -39,7 +39,7 @@ const Scan = Vue.component("scan", {
 				});
 			}
 
-			let keys = Object.keys(transaction).filter(field => this.requiredFields.indexOf(field));
+			let keys = Object.keys(transaction).filter(field => this.requiredFields.indexOf(field) != -1);
 			if (keys.length == this.requiredFields.length) {
 				this.transaction = transaction;
 			} else {

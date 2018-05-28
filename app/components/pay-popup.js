@@ -28,8 +28,6 @@ const PayPopup = Vue.component("pay-popup", {
 			}
 		},
 		cancel() {
-			console.error(this.transaction);
-			this.transaction = false;
 			this.$parent.$emit("payCanceled", { message: "Compra cancelada." });
 		}
 	}

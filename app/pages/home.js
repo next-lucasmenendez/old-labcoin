@@ -22,13 +22,12 @@ const Home = Vue.component("home", {
 	},
 	mounted() {
 		this.updateBalance();
+		this.$eventbus.$on("updateBalance", this.updateBalance);
 	},
 	methods: {
 		updateBalance() {
-			console.log(this.$web3.eth.defaultAccount);
 			let interval = setInterval(() => {
 				let tokens = this.$instance.balanceOf(this.$web3.eth.defaultAccount).toNumber();
-				console.log(`Tokens: ${ tokens }`);
 				if (tokens != this.tokens) {
 					this.tokens = tokens;
 					clearInterval(interval);

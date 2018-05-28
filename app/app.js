@@ -51,7 +51,7 @@ const app = new Vue({
 			if (this.$contract == null || this.$instance == null) {
 				let contract = this.$web3.eth.contract(artifact.abi);
 				Vue.prototype.$contract = contract;
-				Vue.prototype.$instance = contract.at(this.config.contractAddress);
+				Vue.prototype.$instance = contract.at(artifact.networks["1337"].address);
 			}
 			this.$eventbus.$emit("contractReady");
 		}
