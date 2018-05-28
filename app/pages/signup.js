@@ -14,6 +14,9 @@ const SignUp = Vue.component("signup", {
 		return { config }
 	},
 	mounted() {
+		let me = this.$storage.get("user");
+		if (me) Router.push({ name: "home" });
+
 		this.$on("signin", this.siginHandler);
 	},
 	methods: {
@@ -26,7 +29,7 @@ const SignUp = Vue.component("signup", {
 				this.tokensRequest(data.address).then(balance => {
 					console.log(balance);
 					this.$web3.personal.unlockAccount(data.address, data.password);
-					this.$instance.autoclaim(data.username);
+					console.log(this.$instance.autoclaim(data.username));
 				}).catch(err => {
 					console.error(err);
 					this.$eventbus.$emit("alert", {

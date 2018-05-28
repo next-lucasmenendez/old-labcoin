@@ -22,6 +22,10 @@ const Scan = Vue.component("scan", {
 		this.$on("payCompleted", () => this.payHandler(true));
 		this.$on("payCanceled", () => this.payHandler(false));
 	},
+	beforeRouteLeave(to, from, next) {
+		this.$emit("closeCamera");
+		next();
+	},
 	methods: {
 		transactionHandler(rawTransaction) {
 			let transaction;
