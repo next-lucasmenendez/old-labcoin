@@ -53,7 +53,7 @@ const SignUp = Vue.component("signup", {
 				this.$web3.eth.defaultAccount = data.address;
 
 				this.tokensRequest(data.address).then(balance => {
-					console.log(balance);
+					// Unlock account and autoclaim over the contract
 					this.$web3.personal.unlockAccount(data.address, data.password);
 					console.log(this.$instance.autoclaim(data.username));
 				}).catch(err => {
@@ -82,6 +82,7 @@ const SignUp = Vue.component("signup", {
 
 				fetch(config.tokensATM, { method, headers, body })
 					.then(res => {
+						// Get balance
 						try {
 							let balance = this.$web3.eth.getBalance(address);
 							resolve(balance);
