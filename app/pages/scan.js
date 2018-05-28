@@ -48,7 +48,7 @@ const Scan = Vue.component("scan", {
 		},
 		payHandler(success) {
 			let type = success ? "success" : "warning";
-			let message = success ? `Genial! Acabas de comprar: ${ this.transaction.productName}` : "Compra cancelada."; 
+			let message = success ? `Genial! Acabas de comprar: '${ this.transaction.productName }'` : "Compra cancelada."; 
 
 			this.$eventbus.$emit("alert", { type, message });
 			this.transaction = null;

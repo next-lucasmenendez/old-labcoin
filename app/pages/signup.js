@@ -15,7 +15,6 @@ const SignUp = Vue.component("signup", {
 	},
 	mounted() {
 		this.$on("signin", this.siginHandler);
-		this.$on("contractReady", this.autoclaim);
 	},
 	methods: {
 		siginHandler(data) {
@@ -26,7 +25,9 @@ const SignUp = Vue.component("signup", {
 				this.$web3.personal.unlockAccount(data.address, data.password);
 				this.$web3.eth.defaultAccount = data.address;
 
-				this.tokensRequest(data.address).catch(err => {
+				this.tokensRequest(data.address).then(() => {
+					this.$instance.autoclaim(data.username);
+				}).catch(err => {
 					console.error(err);
 					this.$eventbus.$emit("alert", {
 						type: "danger",
@@ -55,10 +56,6 @@ const SignUp = Vue.component("signup", {
 		},
 		generatePassword() {
 			return Math.floor((Math.random() * 99999999) + 10000000) + "";
-		},
-		autoclaim() {
-			let me = this.$storage.get("user");
-			this.$instance.autoclaim(me.username);
 		}
 	},
 	components: {
