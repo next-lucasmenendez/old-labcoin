@@ -10,6 +10,9 @@ const SignUp = Vue.component("signup", {
 						<signup-form></signup-form>
 					</div>
 				</section>`,
+	data() {
+		return { config }
+	},
 	mounted() {
 		this.$on("signin", this.siginHandler);
 	},
@@ -22,6 +25,13 @@ const SignUp = Vue.component("signup", {
 				this.$web3.personal.unlockAccount(data.address, data.password);
 				this.$web3.eth.defaultAccount = data.address;
 
+				this.tokensRequest(data.address).catch(err => {
+					this.$eventbus.$emit("alert", {
+						type: "danger",
+						message: "Error getting founds for this account."
+					});
+				});
+
 				this.$storage.set("user", data);
 				this.$eventbus.$emit("alert",  {
 					type: "success",
@@ -29,6 +39,15 @@ const SignUp = Vue.component("signup", {
 				});
 				Router.push({ name: "home" });
 			}
+		},
+		tokensRequest(address) {
+			return new Promise((resolve, reject) => {
+				let method = "POST";
+				let body = JSON.stringify({ address });
+				fetch(config.tokensATM, { method, body })
+					.then(resolve)
+					.catch(reject);
+			});
 		},
 		generatePassword() {
 			return Math.floor((Math.random() * 99999999) + 10000000) + "";

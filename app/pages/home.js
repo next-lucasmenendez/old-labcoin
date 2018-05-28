@@ -6,7 +6,7 @@ const Home = Vue.component("home", {
 
 					<tilling :count="tokens"></tilling>
 
-					<router-link tag="button" class="sb-button sb-width-70 sb-margin-top-4 sb-margin-bottom-2" :to="{ name: 'scan' }">
+					<router-link tag="button" class="sb-button sb-button-large sb-width-70 sb-margin-top-4 sb-margin-bottom-2" :to="{ name: 'scan' }">
 						Escanear QR
 					</router-link>
 
