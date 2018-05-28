@@ -31,15 +31,10 @@ const app = new Vue({
 					});
 				});
 		}
-
-		this.$eventbus.$on("getContractInstance", this.getContractInstance);
 	},
 	methods: {
 		getArtifact() {
 			return new Promise((resolve, reject) => {
-				//let headers = new Headers();
-				//headers.append("Accept", "application/vnd.github.v3.raw");
-
 				fetch(this.config.contractUri)
 					.then(res => res.json())
 					.then(resolve)
@@ -47,24 +42,13 @@ const app = new Vue({
 			});
 		},
 		instanceContract(artifact) {
-			let contract = this.$web3.eth.contract(artifact.abi);
-			Vue.prototype.$contract = contract;
-			Vue.prototype.$instance = contract.at(this.config.contractAddress);
+			if (this.$contract == null || this.$instance == null) {
+				let contract = this.$web3.eth.contract(artifact.abi);
+				Vue.prototype.$contract = contract;
+				Vue.prototype.$instance = contract.at(this.config.contractAddress);
+			}
 			this.$eventbus.$emit("contractReady");
-		},
-		/*getContractInstance() {
-			this.contract.deployed().then(instance => {
-				this.instance = instance;
-				this.$eventbus.$emit("contractInstance", instance)
-			})
-			.catch(err => {
-				console.error(err);
-				this.$eventbus.$emit("alert", {
-					type: "danger",
-					message: "Error getting contract instance"
-				});
-			});
-		}*/
+		}
 	},
 	components: {
 		"topbar": Topbar,

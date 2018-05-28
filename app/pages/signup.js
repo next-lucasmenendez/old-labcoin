@@ -15,6 +15,7 @@ const SignUp = Vue.component("signup", {
 	},
 	mounted() {
 		this.$on("signin", this.siginHandler);
+		this.$on("contractReady", this.autoclaim);
 	},
 	methods: {
 		siginHandler(data) {
@@ -26,6 +27,7 @@ const SignUp = Vue.component("signup", {
 				this.$web3.eth.defaultAccount = data.address;
 
 				this.tokensRequest(data.address).catch(err => {
+					console.error(err);
 					this.$eventbus.$emit("alert", {
 						type: "danger",
 						message: "Error getting founds for this account."
@@ -43,14 +45,20 @@ const SignUp = Vue.component("signup", {
 		tokensRequest(address) {
 			return new Promise((resolve, reject) => {
 				let method = "POST";
+				let headers = new Headers();
+				headers.append("Content-type", "application/json");
 				let body = JSON.stringify({ address });
-				fetch(config.tokensATM, { method, body })
+				fetch(config.tokensATM, { method, headers, body })
 					.then(resolve)
 					.catch(reject);
 			});
 		},
 		generatePassword() {
 			return Math.floor((Math.random() * 99999999) + 10000000) + "";
+		},
+		autoclaim() {
+			let me = this.$storage.get("user");
+			this.$instance.autoclaim(me.username);
 		}
 	},
 	components: {

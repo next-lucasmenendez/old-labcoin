@@ -6,7 +6,6 @@
   "author": "Beeva Labs",
   "license": "MIT",
   "dependencies": {
-    "instascan": "^1.0.0",
     "jsqr": "^1.0.4",
     "truffle-contract": "^3.0.5",
     "vue": "^2.5.16",

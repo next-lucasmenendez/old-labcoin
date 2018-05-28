@@ -8,6 +8,7 @@ const Scan = Vue.component("scan", {
 				</section>`,
 	data() {
 		return {
+			requiredFields: [ "standAddress", "standName", "productName", "productPrice", "productThumbnail" ],
 			transaction: null /*{
 				standAddress: "0x6ae9019c13f19ca47eb9f6fb1c85398a2f8d0b06",
 				standName: "Test Stand",
@@ -22,8 +23,28 @@ const Scan = Vue.component("scan", {
 		this.$on("payCanceled", () => this.payHandler(false));
 	},
 	methods: {
-		transactionHandler(transaction) {
-			this.transaction = transaction;
+		transactionHandler(rawTransaction) {
+			let transaction;
+			try {
+				transaction = JSON.parse(rawTransaction);
+			} catch(err) {
+				console.error(err);
+				this.$eventbus.$emit("alert", {
+					type: "danger",
+					message: "Bad formated product."
+				});
+			}
+
+			let keys = Object.keys(transaction).filter(field => this.requiredFields.indexOf(field));
+			if (keys.length() == this.requiredFields.length()) {
+				this.transaction = transaction;
+			} else {
+				console.error(`Bad formated product: Required ${ this.requiredFields }, got ${ keys }`);
+				this.$eventbus.$emit("alert", {
+					type: "danger",
+					message: "Bad formated product."
+				});	
+			}
 		},
 		payHandler(success) {
 			let type = success ? "success" : "warning";
