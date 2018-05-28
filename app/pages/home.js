@@ -25,8 +25,7 @@ const Home = Vue.component("home", {
 	},
 	methods: {
 		updateBalance() {
-			let me = this.$storage.get("user")
-			this.tokens = this.$instance.balanceOf(me.address).toNumber();
+			this.tokens = this.$instance.balanceOf(this.$web3.eth.defaultAccount).toNumber();
 		}
 	},
 	components: {

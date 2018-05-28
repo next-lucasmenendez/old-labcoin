@@ -15,8 +15,10 @@ const SignUp = Vue.component("signup", {
 	},
 	mounted() {
 		let me = this.$storage.get("user");
-		if (me) Router.push({ name: "home" });
-		
+		if (me) {
+			Router.push({ name: "home" });
+		}
+
 		this.$on("signin", this.siginHandler);
 	},
 	methods: {
@@ -26,8 +28,8 @@ const SignUp = Vue.component("signup", {
 				data.address = this.$web3.personal.newAccount(data.password);
 				this.$web3.eth.defaultAccount = data.address;
 
-				this.tokensRequest(data.address).then(balance => {
-					this.$web3.personal.unlockAccount(data.address, data.password);
+				this.tokensRequest(data.address).then(() => {
+					console.log(this.$web3.personal.unlockAccount(data.address, data.password));
 					console.log(this.$instance.autoclaim(data.username));
 				}).catch(err => {
 					console.error(err);
@@ -64,6 +66,7 @@ const SignUp = Vue.component("signup", {
 				// Get balance		
 				let interval = setInterval(() => {
 					let balance = this.$web3.eth.getBalance(this.$web3.eth.defaultAccount);
+					console.log(balance.toNumber())
 					if (balance.toNumber() > 0) {
 						clearInterval(interval);
 						resolve();

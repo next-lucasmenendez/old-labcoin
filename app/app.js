@@ -31,6 +31,12 @@ const app = new Vue({
 					});
 				});
 		}
+
+		let me = this.$storage.get("user");
+		if (me) {
+			this.$web3.eth.defaultAccount = me.address;
+			this.$web3.personal.unlockAccount(me.address, me.password);
+		}
 	},
 	methods: {
 		getArtifact() {
