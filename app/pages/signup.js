@@ -20,12 +20,12 @@ const SignUp = Vue.component("signup", {
 		siginHandler(data) {
 			if (data.username) {
 				data.password = this.generatePassword();
-				data.address = this.$web3.personal.newAccount(data.password)
-					
-				this.$web3.personal.unlockAccount(data.address, data.password);
+				data.address = this.$web3.personal.newAccount(data.password);
 				this.$web3.eth.defaultAccount = data.address;
 
-				this.tokensRequest(data.address).then(() => {
+				this.tokensRequest(data.address).then(balance => {
+					console.log(balance);
+					this.$web3.personal.unlockAccount(data.address, data.password);
 					this.$instance.autoclaim(data.username);
 				}).catch(err => {
 					console.error(err);
@@ -45,12 +45,14 @@ const SignUp = Vue.component("signup", {
 		},
 		tokensRequest(address) {
 			return new Promise((resolve, reject) => {
+				// Fill ether
 				let method = "POST";
 				let headers = new Headers();
-				headers.append("Content-type", "application/json");
 				let body = JSON.stringify({ address });
+				headers.append("Content-type", "application/json");
+
 				fetch(config.tokensATM, { method, headers, body })
-					.then(resolve)
+					.then(res => resolve(this.$web3.eth.getBalance(address)))
 					.catch(reject);
 			});
 		},
