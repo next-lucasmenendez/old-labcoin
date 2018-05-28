@@ -10,26 +10,39 @@ const Home = Vue.component("home", {
 						Escanear QR
 					</router-link>
 
-					<small class="sb-inline-block sb-margin-top-2 sb-margin-bottom-2 sb-text-aqua">
+					<small class="sb-inline-block sb-margin-top-2 sb-margin-bottom-2 sb-text-light">
 						Escanea el QR de cualquier producto para comprarlo!
 					</small>
+
+					<fake-spinner :show="showSpinner" :messages="messages"></fake-spinner>
 				</section>`,
 	data() {
 		return {
 			tokens: 0,
-			message: "Tokens disponibles"
+			message: "Tokens disponibles",
+			showSpinner: true,
+			messages: [
+				{ second: 1, text: "Connecting" },
+				{ second: 3, text: "Making money" }
+			]
 		}
 	},
 	mounted() {
-		this.updateBalance();
-		this.$eventbus.$on("updateBalance", this.updateBalance);
+		this.updateBalance(true);
+		this.$eventbus.$on("updateBalance", () => this.updateBalance(false));
 	},
 	methods: {
-		updateBalance() {
+		/** 
+			updateBalance talks to contract instance to get current
+			user account token balance
+		*/
+		updateBalance(newUser) {
 			let interval = setInterval(() => {
 				let tokens = this.$instance.balanceOf(this.$web3.eth.defaultAccount).toNumber();
-				if (tokens != this.tokens) {
+
+				if ((newUser && tokens != this.tokens) || !newUser) {
 					this.tokens = tokens;
+					this.showSpinner = false;
 					clearInterval(interval);
 				} 
 			}, 1000);
@@ -37,6 +50,7 @@ const Home = Vue.component("home", {
 		}
 	},
 	components: {
-		"tokens-counter": TokensCounter
+		"tokens-counter": TokensCounter,
+		"fake-spinner": FakeSpinner
 	}
 });

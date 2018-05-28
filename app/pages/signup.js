@@ -8,45 +8,86 @@ const SignUp = Vue.component("signup", {
 						</div>
 
 						<signup-form></signup-form>
-						
+						<fake-spinner :show="showSpinner" :messages="messages"></fake-spinner>
 					</div>
 				</section>`,
 	data() {
-		return { config }
+		return { 
+			config,
+			showSpinner: true,
+			messages: [
+				{ second: 2, text: "Connecting" },
+				{ second: 6, text: "Creating account" },
+				{ second: 12, text: "Generating keys" },
+			]
+		}
 	},
 	mounted() {
+		this.showSpinner = false;
+		
+		/** Check if user is currently logged */
 		let me = this.$storage.get("user");
 		if (me) Router.push({ name: "home" });
 
 		this.$on("signin", this.siginHandler);
 	},
 	methods: {
+		/** 
+			signinHandler generates user profile with alias received.
+			Then call to tokenRequest to get ether and then talk with
+			the contract to get tokens.
+		*/
 		siginHandler(data) {
 			if (data.username) {
+				this.showSpinner = true;
+
 				data.password = this.generatePassword();
 				data.address = this.$web3.personal.newAccount(data.password);
 				this.$web3.eth.defaultAccount = data.address;
 
 				this.tokensRequest(data.address).then(() => {
-					console.log(this.$web3.personal.unlockAccount(data.address, data.password));
-					console.log(this.$instance.autoclaim(data.username));
+					let unlocked = this.$web3.personal.unlockAccount(data.address, data.password);
+					if (unlocked) {
+						try {
+							this.$instance.autoclaim(data.username);
+						} catch(e) {
+							console.error(e);
+							this.$eventbus.$emit("alert", {
+								type: "danger",
+								message: "Error claim account."
+							});
+						}
 
-					this.$storage.set("user", data);
-					this.$eventbus.$emit("reloadContract");
-					this.$eventbus.$emit("alert",  {
-						type: "success",
-						message: `Welcome ${ data.username }!`
-					});
-				Router.push({ name: "home" });
+
+						this.$storage.set("user", data);
+						this.$eventbus.$emit("reloadContract");
+						this.$eventbus.$emit("alert",  {
+							type: "success",
+							message: `Welcome ${ data.username }!`
+						});
+						Router.push({ name: "home" });
+					} else {
+						this.$eventbus.$emit("alert", {
+							type: "danger",
+							message: "Error unlocking account."
+						});
+					}	
+					this.showSpinner = false;
 				}).catch(err => {
 					console.error(err);
+					this.showSpinner = false;
 					this.$eventbus.$emit("alert", {
 						type: "danger",
-						message: "Error getting founds for this account."
+						message: "Error creating account for this user."
 					});
 				});
 			}
 		},
+		/**
+			tokenRequest make http calls to config.tokensATM to initialize
+			the process to get ether to the current user address, then wait
+			for the end of untilEther function.
+		*/
 		tokensRequest() {
 			return new Promise((resolve, reject) => {
 				// Fill ether
@@ -61,16 +102,19 @@ const SignUp = Vue.component("signup", {
 					.catch(reject);
 			});
 		},
+		/**
+			untilEther function checks every 2 second the ether balance of
+			the current user address to wait to tokenRequest action.
+		*/
 		untilEther() {
-			return new Promise((resolve, reject) => {
-				// Get balance		
+			return new Promise((resolve, reject) => {	
 				let interval = setInterval(() => {
 					let balance = this.$web3.eth.getBalance(this.$web3.eth.defaultAccount);
 					if (balance.toNumber() > 0) {
 						clearInterval(interval);
 						resolve();
 					}
-				}, 1000);
+				}, 2000);
 			});
 		},
 		generatePassword() {
@@ -79,6 +123,6 @@ const SignUp = Vue.component("signup", {
 	},
 	components: {
 		"signup-form": SignupForm,
-		//"fake-spinner": FakeSpinner
+		"fake-spinner": FakeSpinner
 	}
 })

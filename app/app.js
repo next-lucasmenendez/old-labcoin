@@ -10,6 +10,7 @@ const app = new Vue({
 	router: Router,
 	data: { config },
 	created() {
+		/** Init EventBus and Storage wrappers */
 		Vue.prototype.$eventbus = new Vue();
 		Vue.prototype.$storage = new Storage();
 
@@ -32,6 +33,7 @@ const app = new Vue({
 				});
 		}
 
+		/** Check if user is currently logged, and init contract */
 		let me = this.$storage.get("user");
 		if (me) {
 			this.$web3.eth.defaultAccount = me.address;
@@ -39,14 +41,22 @@ const app = new Vue({
 		}
 	},
 	methods: {
+		/** Get cached artifact or get it from config.contractUri */
 		getArtifact() {
 			return new Promise((resolve, reject) => {
+				let artifact = this.$storage.get("artifact");
+				if (artifact) resolve(artifact);
+
 				fetch(this.config.contractUri)
 					.then(res => res.json())
-					.then(resolve)
+					.then(json => {
+						this.$storage.set("artifact", json);
+						resolve(json);
+					})
 					.catch(reject)
 			});
 		},
+		/** Instance contract with artifact */
 		instanceContract(artifact) {
 			if (this.$contract == null || this.$instance == null) {
 				let contract = this.$web3.eth.contract(artifact.abi);
