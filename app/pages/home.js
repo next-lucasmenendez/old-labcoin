@@ -31,6 +31,7 @@ const Home = Vue.component("home", {
 				console.log(`Tokens: ${ tokens }`);
 				if (tokens != this.tokens) {
 					this.tokens = tokens;
+					clearInterval(interval);
 				} 
 			}, 1000);
 			

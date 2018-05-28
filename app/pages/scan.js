@@ -40,7 +40,7 @@ const Scan = Vue.component("scan", {
 			}
 
 			let keys = Object.keys(transaction).filter(field => this.requiredFields.indexOf(field));
-			if (keys.length() == this.requiredFields.length()) {
+			if (keys.length == this.requiredFields.length) {
 				this.transaction = transaction;
 			} else {
 				console.error(`Bad formated product: Required ${ this.requiredFields }, got ${ keys }`);

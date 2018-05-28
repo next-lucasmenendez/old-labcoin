@@ -8,7 +8,7 @@ const SignUp = Vue.component("signup", {
 						</div>
 
 						<signup-form></signup-form>
-						<fake-spinner></fake-spinner>
+						
 					</div>
 				</section>`,
 	data() {
@@ -79,6 +79,6 @@ const SignUp = Vue.component("signup", {
 	},
 	components: {
 		"signup-form": SignupForm,
-		"fake-spinner": FakeSpinner
+		//"fake-spinner": FakeSpinner
 	}
 })
