@@ -4,6 +4,19 @@ const QRReader = Vue.component("qr-reader", {
 						<video id="preview"></video>
 					</div>
 				</div>`,
+	created() {
+        this.$parent.$on("closeCamera", () => {
+            Instascan.Camera.getCameras().then(function (cameras) {
+                if (cameras.length > 0) {
+                    scanner.stop(cameras[0]);
+                } else {
+                    console.error('No cameras found.');
+                }
+            }).catch(function (e) {
+                console.error(e);
+            });        });
+	}
+	,
 	data() {
 		return {
 			containerStyles: {
@@ -31,7 +44,12 @@ const QRReader = Vue.component("qr-reader", {
 			mirror: true
 		});
 		scanner.addListener('scan', function(content) {
-
+            this.$parent.$emit("productScanned", {
+                standAddress: "0x6ae9019c13f19ca47eb9f6fb1c85398a2f8d0b06",
+                    standName: "Test Stand",
+                    productName: "Cardboard",
+                    productThumbnail: "https://…"
+            });
 			console.log(content);
 		});
 		Instascan.Camera.getCameras().then(function(cameras) {
