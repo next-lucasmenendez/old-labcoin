@@ -25,7 +25,15 @@ const Home = Vue.component("home", {
 	},
 	methods: {
 		updateBalance() {
-			this.tokens = this.$instance.balanceOf(this.$web3.eth.defaultAccount).toNumber();
+			console.log(this.$web3.eth.defaultAccount);
+			let interval = setInterval(() => {
+				let tokens = this.$instance.balanceOf(this.$web3.eth.defaultAccount).toNumber();
+				console.log(tokens);
+				if (tokens != this.tokens) {
+					this.tokens = tokens;
+				} 
+			}, 1000);
+			
 		}
 	},
 	components: {
