@@ -19,8 +19,8 @@ const Scan = Vue.component("scan", {
 	},
 	created() {
 		this.$on("productScanned", this.transactionHandler);
-		this.$on("payCompleted", () => this.payHandler(true));
-		this.$on("payCanceled", () => this.payHandler(false));
+		this.$on("payCompleted", transaction => this.payHandler(transaction, true));
+		this.$on("payCanceled", err => this.payHandler(err, false));
 	},
 	beforeRouteLeave(to, from, next) {
 		this.$emit("closeCamera");
@@ -50,9 +50,9 @@ const Scan = Vue.component("scan", {
 				});	
 			}
 		},
-		payHandler(success) {
+		payHandler(data, success) {
 			let type = success ? "success" : "warning";
-			let message = success ? `Genial! Acabas de comprar: '${ this.transaction.productName }'` : "Compra cancelada."; 
+			let message = success ? `Genial! Acabas de comprar: '${ this.transaction.productName }'` : data.message; 
 
 			this.$eventbus.$emit("alert", { type, message });
 			this.transaction = null;

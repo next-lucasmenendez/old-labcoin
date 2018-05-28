@@ -21,12 +21,19 @@ const Home = Vue.component("home", {
 		}
 	},
 	mounted() {
-		this.$eventbus.$on("contractReady", this.updateBalance);
+		this.updateBalance();
 	},
 	methods: {
 		updateBalance() {
-			let me = this.$storage.get("user")
-			this.tokens = this.$instance.balanceOf(me.address).toNumber();
+			console.log(this.$web3.eth.defaultAccount);
+			let interval = setInterval(() => {
+				let tokens = this.$instance.balanceOf(this.$web3.eth.defaultAccount).toNumber();
+				console.log(`Tokens: ${ tokens }`);
+				if (tokens != this.tokens) {
+					this.tokens = tokens;
+				} 
+			}, 1000);
+			
 		}
 	},
 	components: {

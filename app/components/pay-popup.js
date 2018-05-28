@@ -19,11 +19,18 @@ const PayPopup = Vue.component("pay-popup", {
 	methods: {
 		payIt() {
 			console.log(this.transaction);
-			this.$parent.$emit("payCompleted");
+			let data = JSON.stringify(this.transaction);
+			let ok = this.$instance.spendToken(this.transaction.standAddress, this.transaction.productPrice, data);
+			if (ok) {
+				this.$parent.$emit("payCompleted", this.transaction);
+			} else {
+				this.$parent.$emit("payCanceled", { message: "Error perfoming transaction." });	
+			}
 		},
 		cancel() {
 			console.error(this.transaction);
-			this.$parent.$emit("payCanceled");
+			this.transaction = false;
+			this.$parent.$emit("payCanceled", { message: "Compra cancelada." });
 		}
 	}
 });

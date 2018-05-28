@@ -6,7 +6,7 @@ const SignUp = Vue.component("signup", {
 							<hr class="sb-bg sb-margin-top-3 sb-margin-bottom-3">
 							<p class="sb-text-white">Crea tu nickname para el evento y recibe <span class="sb-text-aqua">LabCoin</span>'s gratis para conseguir regalos en los diferentes stands.</p>
 						</div>
-						
+
 						<signup-form></signup-form>
 					</div>
 				</section>`,
@@ -17,45 +17,26 @@ const SignUp = Vue.component("signup", {
 		let me = this.$storage.get("user");
 		if (me) Router.push({ name: "home" });
 
-		this.$eventbus.$on("login", this.loginHandler);
 		this.$on("signin", this.siginHandler);
 	},
 	methods: {
-		loginHandler() {
-			let user = {
-				username: "lucas",
-				password: "36506467",
-				address: "0x20204afa6156239bc13244f887580493764d2d91"
-			}
-
-			this.tokensRequest(user.address).then(balance => {
-				console.log(balance);
-				this.$web3.personal.unlockAccount(user.address, user.password);
-				console.log(this.$instance.autoclaim(user.username));
-			}).catch(err => {
-				console.error(err);
-				this.$eventbus.$emit("alert", {
-					type: "danger",
-					message: "Error getting founds for this account."
-				});
-			});
-
-			this.$eventbus.$emit("alert",  {
-				type: "success",
-				message: `Welcome ${ user.username }!`
-			});
-			Router.push({ name: "home" });
-		},
 		siginHandler(data) {
 			if (data.username) {
 				data.password = this.generatePassword();
 				data.address = this.$web3.personal.newAccount(data.password);
 				this.$web3.eth.defaultAccount = data.address;
 
-				this.tokensRequest(data.address).then(balance => {
-					console.log(balance);
-					this.$web3.personal.unlockAccount(data.address, data.password);
+				this.tokensRequest(data.address).then(() => {
+					console.log(this.$web3.personal.unlockAccount(data.address, data.password));
 					console.log(this.$instance.autoclaim(data.username));
+
+					this.$storage.set("user", data);
+					this.$eventbus.$emit("reloadContract");
+					this.$eventbus.$emit("alert",  {
+						type: "success",
+						message: `Welcome ${ data.username }!`
+					});
+				Router.push({ name: "home" });
 				}).catch(err => {
 					console.error(err);
 					this.$eventbus.$emit("alert", {
@@ -63,33 +44,32 @@ const SignUp = Vue.component("signup", {
 						message: "Error getting founds for this account."
 					});
 				});
-
-				this.$storage.set("user", data);
-				this.$eventbus.$emit("alert",  {
-					type: "success",
-					message: `Welcome ${ data.username }!`
-				});
-				Router.push({ name: "home" });
 			}
 		},
-		tokensRequest(address) {
+		tokensRequest() {
 			return new Promise((resolve, reject) => {
 				// Fill ether
 				let method = "POST";
 				let headers = new Headers();
-				let body = JSON.stringify({ address });
+				let body = JSON.stringify({ address: this.$web3.eth.defaultAccount });
 				headers.append("Content-type", "application/json");
 
 				fetch(config.tokensATM, { method, headers, body })
-					.then(res => {
-						try {
-							let balance = this.$web3.eth.getBalance(address);
-							resolve(balance);
-						} catch(err) {
-							reject(err);
-						}
-					})
+					.then(this.untilEther)
+					.then(resolve)
 					.catch(reject);
+			});
+		},
+		untilEther() {
+			return new Promise((resolve, reject) => {
+				// Get balance		
+				let interval = setInterval(() => {
+					let balance = this.$web3.eth.getBalance(this.$web3.eth.defaultAccount);
+					if (balance.toNumber() > 0) {
+						clearInterval(interval);
+						resolve();
+					}
+				}, 1000);
 			});
 		},
 		generatePassword() {
