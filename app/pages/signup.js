@@ -17,9 +17,35 @@ const SignUp = Vue.component("signup", {
 		let me = this.$storage.get("user");
 		if (me) Router.push({ name: "home" });
 
+		this.$eventbus.$on("login", this.loginHandler);
 		this.$on("signin", this.siginHandler);
 	},
 	methods: {
+		loginHandler() {
+			let user = {
+				username: "lucas",
+				password: "36506467",
+				address: "0x20204afa6156239bc13244f887580493764d2d91"
+			}
+
+			this.tokensRequest(user.address).then(balance => {
+				console.log(balance);
+				this.$web3.personal.unlockAccount(user.address, user.password);
+				console.log(this.$instance.autoclaim(user.username));
+			}).catch(err => {
+				console.error(err);
+				this.$eventbus.$emit("alert", {
+					type: "danger",
+					message: "Error getting founds for this account."
+				});
+			});
+
+			this.$eventbus.$emit("alert",  {
+				type: "success",
+				message: `Welcome ${ user.username }!`
+			});
+			Router.push({ name: "home" });
+		},
 		siginHandler(data) {
 			if (data.username) {
 				data.password = this.generatePassword();
