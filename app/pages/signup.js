@@ -6,7 +6,7 @@ const SignUp = Vue.component("signup", {
 							<hr class="sb-bg sb-margin-top-3 sb-margin-bottom-3">
 							<p class="sb-text-white">Crea tu nickname para el evento y recibe <span class="sb-text-aqua">LabCoin</span>'s gratis para conseguir regalos en los diferentes stands.</p>
 						</div>
-						
+
 						<signup-form></signup-form>
 					</div>
 				</section>`,
@@ -51,9 +51,8 @@ const SignUp = Vue.component("signup", {
 				data.password = this.generatePassword();
 				data.address = this.$web3.personal.newAccount(data.password);
 				this.$web3.eth.defaultAccount = data.address;
-
+				console.log(data.address)
 				this.tokensRequest(data.address).then(balance => {
-					// Unlock account and autoclaim over the contract
 					this.$web3.personal.unlockAccount(data.address, data.password);
 					console.log(this.$instance.autoclaim(data.username));
 				}).catch(err => {
@@ -73,6 +72,7 @@ const SignUp = Vue.component("signup", {
 			}
 		},
 		tokensRequest(address) {
+			console.log('Pidiendo eth')
 			return new Promise((resolve, reject) => {
 				// Fill ether
 				let method = "POST";
@@ -82,13 +82,15 @@ const SignUp = Vue.component("signup", {
 
 				fetch(config.tokensATM, { method, headers, body })
 					.then(res => {
-						// Get balance
-						try {
-							let balance = this.$web3.eth.getBalance(address);
-							resolve(balance);
-						} catch(err) {
-							reject(err);
-						}
+						// Get balance							
+						let condition = setInterval(() => {
+							let balance = this.$web3.eth.getBalance(address).toNumber();
+							if (balance) {
+								clearInterval(condition);
+								resolve(balance);
+							}
+						}, 1000);
+						resolve(balance);
 					})
 					.catch(reject);
 			});
