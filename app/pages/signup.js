@@ -15,9 +15,7 @@ const SignUp = Vue.component("signup", {
 	},
 	mounted() {
 		let me = this.$storage.get("user");
-		if (me) {
-			Router.push({ name: "home" });
-		}
+		if (me) Router.push({ name: "home" });
 
 		this.$on("signin", this.siginHandler);
 	},
@@ -31,6 +29,14 @@ const SignUp = Vue.component("signup", {
 				this.tokensRequest(data.address).then(() => {
 					console.log(this.$web3.personal.unlockAccount(data.address, data.password));
 					console.log(this.$instance.autoclaim(data.username));
+
+					this.$storage.set("user", data);
+					this.$eventbus.$emit("reloadContract");
+					this.$eventbus.$emit("alert",  {
+						type: "success",
+						message: `Welcome ${ data.username }!`
+					});
+				Router.push({ name: "home" });
 				}).catch(err => {
 					console.error(err);
 					this.$eventbus.$emit("alert", {
@@ -38,13 +44,6 @@ const SignUp = Vue.component("signup", {
 						message: "Error getting founds for this account."
 					});
 				});
-
-				this.$storage.set("user", data);
-				this.$eventbus.$emit("alert",  {
-					type: "success",
-					message: `Welcome ${ data.username }!`
-				});
-				Router.push({ name: "home" });
 			}
 		},
 		tokensRequest() {
@@ -66,7 +65,6 @@ const SignUp = Vue.component("signup", {
 				// Get balance		
 				let interval = setInterval(() => {
 					let balance = this.$web3.eth.getBalance(this.$web3.eth.defaultAccount);
-					console.log(balance.toNumber())
 					if (balance.toNumber() > 0) {
 						clearInterval(interval);
 						resolve();
