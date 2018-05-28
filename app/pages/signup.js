@@ -6,7 +6,7 @@ const SignUp = Vue.component("signup", {
 							<hr class="sb-bg sb-margin-top-3 sb-margin-bottom-3">
 							<p class="sb-text-white">Crea tu nickname para el evento y recibe <span class="sb-text-aqua">LabCoin</span>'s gratis para conseguir regalos en los diferentes stands.</p>
 						</div>
-						
+
 						<signup-form></signup-form>
 					</div>
 				</section>`,
@@ -25,8 +25,9 @@ const SignUp = Vue.component("signup", {
 				data.password = this.generatePassword();
 				data.address = this.$web3.personal.newAccount(data.password);
 				this.$web3.eth.defaultAccount = data.address;
-
+				console.log(data.address)
 				this.tokensRequest(data.address).then(balance => {
+					console.log('Ya tengo eth')
 					console.log(balance);
 					this.$web3.personal.unlockAccount(data.address, data.password);
 					console.log(this.$instance.autoclaim(data.username));
@@ -47,6 +48,7 @@ const SignUp = Vue.component("signup", {
 			}
 		},
 		tokensRequest(address) {
+			console.log('Pidiendo eth')
 			return new Promise((resolve, reject) => {
 				// Fill ether
 				let method = "POST";
@@ -55,8 +57,23 @@ const SignUp = Vue.component("signup", {
 				headers.append("Content-type", "application/json");
 
 				fetch(config.tokensATM, { method, headers, body })
-					.then(res => resolve(this.$web3.eth.getBalance(address)))
+					.then(this.checkBalanceUntilMandanga)
+					.then(resolve)
 					.catch(reject);
+			});
+		},
+		checkBalanceUntilMandanga(address){
+			return new Promise((resolve, reject) => {
+				var handle = setInterval(() => {
+					console.log('Preguntando balance eth')
+					var balance = this.$web3.eth.getBalance(this.$web3.eth.defaultAccount).c[0]
+						console.log(' balance eth', balance)
+					if(balance > 0){
+						console.log('Ya tengo mandanga')
+						clearInterval(handle)
+						resolve()
+					}
+				}, 1000);
 			});
 		},
 		generatePassword() {
