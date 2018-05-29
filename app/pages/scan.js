@@ -51,7 +51,8 @@ const Scan = Vue.component("scan", {
 
 			this.$eventbus.$emit("alert", { type, message });
 			this.transaction = null;
-			Router.push({ name: "home" });
+			
+			if (success) Router.push({ name: "home" });
 		}
 	},
 	components: {
