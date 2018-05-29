@@ -2,13 +2,23 @@ const app = new Vue({
 	el: "#app",
 	template: 	`<section id="labcoin">
 					<topbar></topbar>
-					<transition name="fade">
-						<router-view></router-view>
-					</transition>
-					<alert></alert>
+
+					<section class="sb-relative">					
+						<toast-alert></toast-alert>
+					
+						<transition name="fade">
+							<router-view></router-view>
+						</transition>
+					
+						<fake-spinner :show="showSpinner" :messages="messagesSpinner"></fake-spinner>
+					</section>
 				</section>`,
 	router: Router,
-	data: { config },
+	data: { 
+		config,
+		showSpinner: true,
+		messagesSpinner: []
+	},
 	created() {
 		/** Init EventBus and Storage wrappers */
 		Vue.prototype.$eventbus = new Vue();
@@ -20,18 +30,7 @@ const app = new Vue({
 		Vue.prototype.$contract = null;
 		Vue.prototype.$instance = null;
 
-		/** Contract instance */
-		if (this.$web3.isConnected()) {
-			this.getArtifact()
-				.then(this.instanceContract)
-				.catch(err => {
-					console.error(err);
-					this.$eventbus.$emit({
-						type: "danger",
-						message: "Error getting contract instance ;("
-					});
-				});
-		}
+		this.initContract();
 
 		/** Check if user is currently logged, and init contract */
 		let me = this.$storage.get("user");
@@ -40,7 +39,33 @@ const app = new Vue({
 			this.$web3.personal.unlockAccount(me.address, me.password);
 		}
 	},
+	mounted() {
+		this.$eventbus.$on("initContract", this.initContract);
+		this.$eventbus.$on("showSpinner", messages => {
+			this.messagesSpinner = messages;
+			this.showSpinner = true;
+		});
+
+		this.$eventbus.$on("hideSpinner", () => {
+			this.messagesSpinner = [];
+			this.showSpinner = false;
+		})
+	},
 	methods: {
+		/** initContract initialize contract instance */
+		initContract() {
+			if (this.$web3.isConnected()) {
+				this.getArtifact()
+					.then(this.instanceContract)
+					.catch(err => {
+						console.error(err);
+						this.$eventbus.$emit({
+							type: "danger",
+							message: "Error getting contract instance ;("
+						});
+					});
+			}
+		},
 		/** Get cached artifact or get it from config.contractUri */
 		getArtifact() {
 			return new Promise((resolve, reject) => {
@@ -68,6 +93,7 @@ const app = new Vue({
 	},
 	components: {
 		"topbar": Topbar,
-		"alert": Alert
+		"toast-alert": ToastAlert,
+		"fake-spinner": FakeSpinner
 	}
 });

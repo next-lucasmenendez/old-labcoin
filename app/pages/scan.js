@@ -9,12 +9,7 @@ const Scan = Vue.component("scan", {
 	data() {
 		return {
 			requiredFields: [ "standAddress", "standName", "productName", "productPrice", "productThumbnail" ],
-			transaction: null /*{
-				standAddress: "0x6ae9019c13f19ca47eb9f6fb1c85398a2f8d0b06",
-				standName: "Test Stand",
-				productName: "Cardboard",
-				productThumbnail: "https://d30y9cdsu7xlg0.cloudfront.net/png/1499192-200.png"
-			}*/
+			transaction: null
 		}
 	},
 	created() {

@@ -1,6 +1,6 @@
 const Home = Vue.component("home", {
 	template: 	`<section class="sb-padding-top-4 sb-padding-4 sb-text-center">
-					<tokens-counter :count="tokens" :label="message"></tokens-counter>
+					<tokens-counter :count="tokens" :label="message" :color="this.tokens > 0 ? 'sb-counter-aqua' : 'sb-counter-red'"></tokens-counter>
 
 					<hr class="sb-hr sb-margin-top-3 sb-margin-bottom-3">
 
@@ -13,36 +13,39 @@ const Home = Vue.component("home", {
 					<small class="sb-inline-block sb-margin-top-2 sb-margin-bottom-2 sb-text-light">
 						Escanea el QR de cualquier producto para comprarlo!
 					</small>
-
-					<fake-spinner :show="showSpinner" :messages="messages"></fake-spinner>
 				</section>`,
 	data() {
 		return {
 			tokens: 0,
 			message: "Tokens disponibles",
-			showSpinner: true,
 			messages: [
 				{ second: 1, text: "Connecting" },
-				{ second: 3, text: "Making money" }
+				{ second: 2, text: "Making money" }
 			]
 		}
 	},
-	mounted() {
-		this.updateBalance(true);
-		this.$eventbus.$on("updateBalance", () => this.updateBalance(false));
+	created() {
+		this.$eventbus.$emit("showSpinner", this.messages);
+		this.$eventbus.$emit("initContract");
+		this.$eventbus.$on("contractReady", this.updateBalance);
+		this.$eventbus.$on("updateBalance", this.updateBalance);
 	},
 	methods: {
 		/** 
 			updateBalance talks to contract instance to get current
 			user account token balance
 		*/
-		updateBalance(newUser) {
+		updateBalance() {
+			let registered = this.$instance.isRegistered(this.$web3.eth.defaultAccount);
+
 			let interval = setInterval(() => {
 				let tokens = this.$instance.balanceOf(this.$web3.eth.defaultAccount).toNumber();
 
-				if ((newUser && tokens != this.tokens) || !newUser) {
+				let newAndNoFounds = !registered && tokens > 0;
+				if (newAndNoFounds || tokens != this.tokens) {
 					this.tokens = tokens;
-					this.showSpinner = false;
+					this.$storage.set("transactionInProgress", false);
+					this.$eventbus.$emit("hideSpinner");
 					clearInterval(interval);
 				} 
 			}, 1000);

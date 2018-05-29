@@ -14,7 +14,6 @@ const SignUp = Vue.component("signup", {
 	data() {
 		return { 
 			config,
-			showSpinner: true,
 			messages: [
 				{ second: 2, text: "Connecting" },
 				{ second: 6, text: "Creating account" },
@@ -23,7 +22,7 @@ const SignUp = Vue.component("signup", {
 		}
 	},
 	mounted() {
-		this.showSpinner = false;
+		this.$eventbus.$emit("showSpinner", this.messages);
 		
 		/** Check if user is currently logged */
 		let me = this.$storage.get("user");
@@ -39,7 +38,7 @@ const SignUp = Vue.component("signup", {
 		*/
 		siginHandler(data) {
 			if (data.username) {
-				this.showSpinner = true;
+				this.$eventbus.$emit("showSpinner", this.messages);
 
 				data.password = this.generatePassword();
 				data.address = this.$web3.personal.newAccount(data.password);
@@ -72,10 +71,10 @@ const SignUp = Vue.component("signup", {
 							message: "Error unlocking account."
 						});
 					}	
-					this.showSpinner = false;
+					this.$eventbus.$emit("hideSpinner");
 				}).catch(err => {
 					console.error(err);
-					this.showSpinner = false;
+					this.$eventbus.$emit("hideSpinner");
 					this.$eventbus.$emit("alert", {
 						type: "danger",
 						message: "Error creating account for this user."

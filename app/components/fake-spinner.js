@@ -9,13 +9,9 @@ let FakeSpinner = Vue.component("fake-spinner", {
 						</svg>
 					</div>
 
-					<label :style="labelStyle">Loading...</label>
+					<label :style="labelStyle"> Loading... </label>
 
-					<span 	v-for="message in messages"
-							:style="logStyle" 
-							v-if="count > message.second">
-						{{ message.text }}
-					</span>
+					<span v-for="message in messages" :style="logStyle" v-if="count > message.second"> {{ message.text }} </span>
 				</div>`,
 	props: {
 		show: {
@@ -49,7 +45,8 @@ let FakeSpinner = Vue.component("fake-spinner", {
 				display: "inline-block",
 				verticalAlign: "top",
 				width: "100%",
-				height: "auto"
+				height: "auto",
+				textAlign: "center"
 			},
 			labelStyle: {
 				margin: "16px 0",
@@ -68,7 +65,7 @@ let FakeSpinner = Vue.component("fake-spinner", {
 	},
 	watch: {
 		show: function(val) {
-			if (this.watch) {
+			if (this.show) {
 				this.start();
 			} else {
 				this.stop();

@@ -8,6 +8,8 @@ class Storage {
 	set(key, value) {
 		if (typeof value === 'object' && (value.constructor === Array || value.constructor === Object)) {
 			value = JSON.stringify(value);
+		} else if (typeof value === Boolean) {
+			value = value ? "true" : "false";
 		}
 
 		this.storage.setItem(key, value);
@@ -25,7 +27,13 @@ class Storage {
 			try {
 				value = JSON.parse(raw);
 			} catch (e) {
-				value = raw;
+				if (raw == "true") {
+					value = false
+				} else if (raw == "false") {
+					value = false;
+				} else {
+					value = raw;
+				}
 			}
 		}
 

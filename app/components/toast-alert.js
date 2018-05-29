@@ -1,4 +1,4 @@
-let Alert = Vue.component("alert", {
+let ToastAlert = Vue.component("toast-alert", {
 	template:	`<div 	class="sb-toast sb-shadow" 
 						:class="[ { 'sb-toast-show': show }, type ]" 
 						:style="styleObject"s>
@@ -17,10 +17,11 @@ let Alert = Vue.component("alert", {
 			type: "",
 			types: [ "success", "warning", "danger" ],
 			styleObject: {
-				position: "fixed",
+				position: "absolute",
 				display: "none",
-				bottom: "40px",
-				left: "30px",
+				top: 0,
+				left: 0,
+				width: "100%",
 				zIndex: 10000
 			}
 		}

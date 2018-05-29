@@ -1,7 +1,6 @@
 const PayPopup = Vue.component("pay-popup", {
-	template:	`<div	class="sb-center-absolute sb-width-80 sb-text-center sb-bg-white sb-padding-3 sb-radius-1 sb-shadow"
-						v-if="transaction">
-					<span></span> 
+	template:	`<div class="sb-center-absolute sb-width-80 sb-text-center sb-bg-white sb-padding-3 sb-radius-1 sb-shadow" v-if="transaction">
+					
 					<p>¿Quieres gastar un token en '{{ transaction.productName }}'?</p>
 					<img class="db-inline-block sb-width-50" :src="transaction.productThumbnail">
 
@@ -18,11 +17,11 @@ const PayPopup = Vue.component("pay-popup", {
 	},
 	methods: {
 		payIt() {
-			console.log(this.transaction);
 			let data = JSON.stringify(this.transaction);
-			let ok = this.$instance.spendToken(this.transaction.standAddress, this.transaction.productPrice, data);
+			let ok = this.$instance.spendToken(this.transaction.standAddress, parseInt(this.transaction.productPrice), data);
 			if (ok) {
 				this.$parent.$emit("payCompleted", this.transaction);
+				this.$storage.set("transactionInProgress", true);
 			} else {
 				this.$parent.$emit("payCanceled", { message: "Error perfoming transaction." });	
 			}
