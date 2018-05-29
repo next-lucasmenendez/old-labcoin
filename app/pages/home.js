@@ -53,7 +53,6 @@ const Home = Vue.component("home", {
 		}
 	},
 	components: {
-		"tokens-counter": TokensCounter,
-		"fake-spinner": FakeSpinner
+		"tokens-counter": TokensCounter
 	}
 });
