@@ -16,7 +16,7 @@ const app = new Vue({
 	router: Router,
 	data: { 
 		config,
-		showSpinner: true,
+		showSpinner: false,
 		messagesSpinner: []
 	},
 	created() {

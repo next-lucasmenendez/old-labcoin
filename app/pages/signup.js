@@ -20,9 +20,7 @@ const SignUp = Vue.component("signup", {
 			]
 		}
 	},
-	mounted() {
-		this.$eventbus.$emit("showSpinner", this.messages);
-		
+	mounted() {		
 		/** Check if user is currently logged */
 		let me = this.$storage.get("user");
 		if (me) Router.push({ name: "home" });
