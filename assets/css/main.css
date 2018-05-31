@@ -41,6 +41,18 @@ pre, .code {
   color: #f3f1f0;
   font-family: 'IBM Plex Mono', monospace; }
 
+.sb-text-mono {
+  font-family: 'IBM Plex Mono', monospace; }
+
+.sb-weight-light {
+  font-weight: 300; }
+
+.sb-weight-normal {
+  font-weight: 400; }
+
+.sb-weight-bold {
+  font-weight: 700; }
+
 .sb-text-white {
   color: #f3f1f0 !important; }
 

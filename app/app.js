@@ -70,15 +70,19 @@ const app = new Vue({
 		getArtifact() {
 			return new Promise((resolve, reject) => {
 				let artifact = this.$storage.get("artifact");
-				if (artifact) resolve(artifact);
+				if (artifact) {
+					resolve(artifact);
+				} else {
+					console.log(artifact, "hola d");
 
-				fetch(this.config.contractUri)
-					.then(res => res.json())
-					.then(json => {
-						this.$storage.set("artifact", json);
-						resolve(json);
-					})
-					.catch(reject)
+					fetch(this.config.contractUri)
+						.then(res => res.json())
+						.then(json => {
+							this.$storage.set("artifact", json);
+							resolve(json);
+						})
+						.catch(reject);
+				}
 			});
 		},
 		/** Instance contract with artifact */

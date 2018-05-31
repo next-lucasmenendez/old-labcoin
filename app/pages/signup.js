@@ -23,7 +23,7 @@ const SignUp = Vue.component("signup", {
 	mounted() {
 		/** Check if user is currently logged */
 		let me = this.$storage.get("user");
-		if (me) Router.push({ name: "home" });
+		if (me) Router.push({ name: "waiting" });
 
 		this.$on("signin", this.siginHandler);
 	},
@@ -35,41 +35,45 @@ const SignUp = Vue.component("signup", {
 		*/
 		siginHandler(data) {
 			if (data.username) {
-				this.$eventbus.$emit("showSpinner", this.messages);
+				//this.$eventbus.$emit("showSpinner", this.messages);
 
 				data.password = this.generatePassword();
 				data.address = this.$web3.personal.newAccount(data.password);
 				this.$web3.eth.defaultAccount = data.address;
 
-				this.tokensRequest(data.address).then(() => {
-					let unlocked = this.$web3.personal.unlockAccount(data.address, data.password);
-					if (unlocked) {
-						try {
-							this.$instance.autoclaim(data.username);
-						} catch(e) {
-							console.error(e);
+				this.$storage.set("user", data);
+
+				this.tokensRequest(data.address)
+					.then(() => Router.push({ name: "waiting" }))
+					/*.then(() => {
+						let unlocked = this.$web3.personal.unlockAccount(data.address, data.password);
+						if (unlocked) {
+							try {
+								this.$instance.autoclaim(data.username);
+							} catch(e) {
+								console.error(e);
+								this.$eventbus.$emit("alert", {
+									type: "danger",
+									message: "Error claim account."
+								});
+							}
+
+							this.$storage.set("user", data);
+							this.$eventbus.$emit("reloadContract");
+							this.$eventbus.$emit("alert",  {
+								type: "success",
+								message: `Welcome ${ data.username }!`
+							});
+							Router.push({ name: "home" });
+						} else {
 							this.$eventbus.$emit("alert", {
 								type: "danger",
-								message: "Error claim account."
+								message: "Error unlocking account."
 							});
-						}
-
-
-						this.$storage.set("user", data);
-						this.$eventbus.$emit("reloadContract");
-						this.$eventbus.$emit("alert",  {
-							type: "success",
-							message: `Welcome ${ data.username }!`
-						});
-						Router.push({ name: "home" });
-					} else {
-						this.$eventbus.$emit("alert", {
-							type: "danger",
-							message: "Error unlocking account."
-						});
-					}	
-					this.$eventbus.$emit("hideSpinner");
-				}).catch(err => {
+						}	
+						this.$eventbus.$emit("hideSpinner");
+					})*/
+				.catch(err => {
 					console.error(err);
 					this.$eventbus.$emit("hideSpinner");
 					this.$eventbus.$emit("alert", {
@@ -93,7 +97,7 @@ const SignUp = Vue.component("signup", {
 				headers.append("Content-type", "application/json");
 
 				fetch(config.tokensATM, { method, headers, body })
-					.then(this.untilEther)
+					//.then(this.untilEther)
 					.then(resolve)
 					.catch(reject);
 			});

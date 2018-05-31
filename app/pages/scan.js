@@ -8,6 +8,7 @@ const Scan = Vue.component("scan", {
 				</section>`,
 	data() {
 		return {
+			config,
 			requiredFields: [ "standAddress", "standName", "productName", "productPrice", "productThumbnail" ],
 			transaction: null
 		}
@@ -36,6 +37,7 @@ const Scan = Vue.component("scan", {
 
 			let keys = Object.keys(transaction).filter(field => this.requiredFields.indexOf(field) != -1);
 			if (keys.length == this.requiredFields.length) {
+				transaction.standAddress = `${ this.config.addressPrefix }${ transaction.standAddress }`;
 				this.transaction = transaction;
 			} else {
 				console.error(`Bad formated product: Required ${ this.requiredFields }, got ${ keys }`);

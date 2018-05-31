@@ -52,8 +52,16 @@ class Webcam {
 	}
 
 	stop() {
-		this.stream.getTracks().forEach(elem => elem.stop());
-		this.video.src = "";
-		this.video.srcObject = null;
+		return new Promise((resolve, reject) => {
+			try {
+				this.stream.getTracks().forEach(elem => elem.stop());
+			} catch(err) {
+				reject(err);
+			}
+			
+			this.video.src = "";
+			this.video.srcObject = null;
+			resolve();
+		});
 	}
 }
