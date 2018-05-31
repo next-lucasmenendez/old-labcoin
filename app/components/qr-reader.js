@@ -1,45 +1,43 @@
 const QRReader = Vue.component("qr-reader", {
-	template:	`<div>
-					<div class="sb-inline-block" :style="containerStyles">
-						<p class="sb-text-gray" v-if="cameras.length == 0" :style="messageStyle">No camera detected.</p>
-						<div :style="videoStyles">
-							<video autoplay></video>
-						</div>
-					</div>
-					<div v-if="cameras.lenth > 1" class="sb-margin-2">
-						<button type="button" 
-								class="sb-button sb-margin-2"
-								:class="{ active: camera.id == current }" 
-								v-for="camera in cameras"
-								@click="changeCamera(camera)">
-									{{ camera.name }}
-						</button>
+	template:	`<div class="sb-inline-block" :style="containerStyles">
+					<p class="sb-text-gray" :style="messageStyle">No camera detected.</p>
+					<div :style="videoStyles">
+						<video autoplay playsinline muted></video>
 					</div>
 				</div>`,
 	mounted() {
-		let video = this.$el.querySelector("video");
+		this.video = this.$el.querySelector("video");
+		this.webcam = new Webcam(this.video);
+		this.decoder = new QCodeDecoder();
+		this.startScanning();
+
+		/**
 		this.qr = new Instascan.Scanner({ video });
 		this.qr.addListener("scan", this.codeHandler);
 
 		Instascan.Camera.getCameras()
 			.then(cameras => {
+				let iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+				console.log(iOS);
+
+				console.log(cameras);
 				if (cameras.length > 0) {
-					let last = cameras[cameras.length - 1];
+					let initial = iOS ? cameras[0] : cameras[cameras.length - 1];
 
 					this.cameras = cameras;
-					this.current = last.id;
-					this.qr.stop().then(() => this.qr.start(last));
+					this.current = initial.id;
+					this.qr.stop().then(() => this.qr.start(initial));
 				}
 			})
 			.catch(console.error);
-
-        this.$parent.$on("closeCamera", () => this.qr.stop());
+		*/
+        this.$parent.$on("closeCamera", this.stopScanning);
 	},
 	data() {
 		return {
-			qr: null,
-			current: null,
-			cameras: [],
+			loop: null,
+			video: null,
+			webcam: null,
 			containerStyles: {
 				position: "relative",
 				width: "80vw",
@@ -61,17 +59,30 @@ const QRReader = Vue.component("qr-reader", {
 				left: "0",
 				width: "100%",
 				height: "auto",
-				transform: "translateY(-50%) scaleX(-1)!important"
+				textAlign: "center",
+				transform: "translateY(-50%)!important"
 			}
 		}
 	},
 	methods: {
-		codeHandler(content) {
-			this.$parent.$emit("productScanned", content);
+		startScanning() {
+			this.webcam.start().catch(err => {
+				console.error(err);
+				this.$eventbus.$emit("alert", {
+					type: "danger",
+					message: "Error starting camera."
+				});
+			});
+
+			this.loop = setInterval(() => {
+				this.decoder.decodeFromImage(this.webcam.shot(), (err, res) => {
+					if (!err && res) this.$parent.$emit("productScanned", res);
+				});
+			}, 500);
 		},
-		changeCamera(camera) {
-			this.current = camera.id;
-			this.qr.stop().then(() => this.qr.start(camera));
+		stopScanning() {
+			clearInterval(this.loop);
+			this.webcam.stop();
 		}
 	}
 });

@@ -21,7 +21,6 @@ const PayPopup = Vue.component("pay-popup", {
 			let ok = this.$instance.spendToken(this.transaction.standAddress, parseInt(this.transaction.productPrice), data);
 			if (ok) {
 				this.$parent.$emit("payCompleted", this.transaction);
-				this.$storage.set("transactionInProgress", true);
 			} else {
 				this.$parent.$emit("payCanceled", { message: "Error perfoming transaction." });	
 			}
