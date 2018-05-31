@@ -25,10 +25,8 @@ const Home = Vue.component("home", {
 		}
 	},
 	created() {
-		this.$eventbus.$emit("showSpinner", this.messages);
 		this.$eventbus.$emit("initContract");
 		this.$eventbus.$on("contractReady", this.updateBalance);
-		this.$eventbus.$on("updateBalance", this.updateBalance);
 	},
 	methods: {
 		/** 
@@ -36,19 +34,13 @@ const Home = Vue.component("home", {
 			user account token balance
 		*/
 		updateBalance() {
-			let registered = this.$instance.isRegistered(this.$web3.eth.defaultAccount);
-
+			this.tokens = this.$instance.balanceOf(this.$web3.eth.defaultAccount).toNumber();
 			let interval = setInterval(() => {
 				let tokens = this.$instance.balanceOf(this.$web3.eth.defaultAccount).toNumber();
-
-				let newAndNoFounds = !registered && tokens > 0;
-				if (newAndNoFounds || tokens != this.tokens) {
+				if (tokens != this.tokens) {
 					this.tokens = tokens;
-					this.$storage.set("transactionInProgress", false);
-					this.$eventbus.$emit("hideSpinner");
-					clearInterval(interval);
 				} 
-			}, 1000);
+			}, 3000);
 			
 		}
 	},

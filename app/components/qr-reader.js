@@ -11,26 +11,6 @@ const QRReader = Vue.component("qr-reader", {
 		this.decoder = new QCodeDecoder();
 		this.startScanning();
 
-		/**
-		this.qr = new Instascan.Scanner({ video });
-		this.qr.addListener("scan", this.codeHandler);
-
-		Instascan.Camera.getCameras()
-			.then(cameras => {
-				let iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-				console.log(iOS);
-
-				console.log(cameras);
-				if (cameras.length > 0) {
-					let initial = iOS ? cameras[0] : cameras[cameras.length - 1];
-
-					this.cameras = cameras;
-					this.current = initial.id;
-					this.qr.stop().then(() => this.qr.start(initial));
-				}
-			})
-			.catch(console.error);
-		*/
         this.$parent.$on("closeCamera", this.stopScanning);
 	},
 	data() {
@@ -82,7 +62,7 @@ const QRReader = Vue.component("qr-reader", {
 		},
 		stopScanning() {
 			clearInterval(this.loop);
-			this.webcam.stop();
+			this.webcam.stop().catch(console.err);
 		}
 	}
 });
