@@ -15,8 +15,7 @@ const SignUp = Vue.component("signup", {
 			config,
 			messages: [
 				{ second: 2, text: "Connecting" },
-				{ second: 6, text: "Creating account" },
-				{ second: 12, text: "Generating keys" },
+				{ second: 4, text: "Getting contract" },
 			]
 		}
 	},
@@ -35,8 +34,6 @@ const SignUp = Vue.component("signup", {
 		*/
 		siginHandler(data) {
 			if (data.username) {
-				//this.$eventbus.$emit("showSpinner", this.messages);
-
 				data.password = this.generatePassword();
 				data.address = this.$web3.personal.newAccount(data.password);
 				this.$web3.eth.defaultAccount = data.address;
@@ -45,42 +42,14 @@ const SignUp = Vue.component("signup", {
 
 				this.tokensRequest(data.address)
 					.then(() => Router.push({ name: "waiting" }))
-					/*.then(() => {
-						let unlocked = this.$web3.personal.unlockAccount(data.address, data.password);
-						if (unlocked) {
-							try {
-								this.$instance.autoclaim(data.username);
-							} catch(e) {
-								console.error(e);
-								this.$eventbus.$emit("alert", {
-									type: "danger",
-									message: "Error claim account."
-								});
-							}
-
-							this.$storage.set("user", data);
-							this.$eventbus.$emit("reloadContract");
-							this.$eventbus.$emit("alert",  {
-								type: "success",
-								message: `Welcome ${ data.username }!`
-							});
-							Router.push({ name: "home" });
-						} else {
-							this.$eventbus.$emit("alert", {
-								type: "danger",
-								message: "Error unlocking account."
-							});
-						}	
+					.catch(err => {
+						console.error(err);
 						this.$eventbus.$emit("hideSpinner");
-					})*/
-				.catch(err => {
-					console.error(err);
-					this.$eventbus.$emit("hideSpinner");
-					this.$eventbus.$emit("alert", {
-						type: "danger",
-						message: "Error creating account for this user."
+						this.$eventbus.$emit("alert", {
+							type: "danger",
+							message: "Error creating account for this user."
+						});
 					});
-				});
 			}
 		},
 		/**
@@ -97,24 +66,8 @@ const SignUp = Vue.component("signup", {
 				headers.append("Content-type", "application/json");
 
 				fetch(config.tokensATM, { method, headers, body })
-					//.then(this.untilEther)
 					.then(resolve)
 					.catch(reject);
-			});
-		},
-		/**
-			untilEther function checks every 2 second the ether balance of
-			the current user address to wait to tokenRequest action.
-		*/
-		untilEther() {
-			return new Promise((resolve, reject) => {	
-				let interval = setInterval(() => {
-					let balance = this.$web3.eth.getBalance(this.$web3.eth.defaultAccount);
-					if (balance.toNumber() > 0) {
-						clearInterval(interval);
-						resolve();
-					}
-				}, 2000);
 			});
 		},
 		generatePassword() {

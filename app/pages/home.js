@@ -36,10 +36,10 @@ const Home = Vue.component("home", {
 		updateBalance() {
 			this.tokens = this.$instance.balanceOf(this.$web3.eth.defaultAccount).toNumber();
 			let interval = setInterval(() => {
-				let tokens = this.$instance.balanceOf(this.$web3.eth.defaultAccount).toNumber();
-				if (tokens != this.tokens) {
-					this.tokens = tokens;
-				} 
+				try {
+					let tokens = this.$instance.balanceOf(this.$web3.eth.defaultAccount).toNumber();
+					if (tokens != this.tokens) this.tokens = tokens;
+				} catch(e) { console.error(e); }
 			}, 3000);
 			
 		}

@@ -4,7 +4,7 @@ const app = new Vue({
 					<topbar></topbar>
 
 					<section class="sb-relative">					
-						<toast-alert></toast-alert>
+						<toast-alert :data="toastData"></toast-alert>
 					
 						<transition name="fade">
 							<router-view></router-view>
@@ -16,6 +16,7 @@ const app = new Vue({
 	router: Router,
 	data: { 
 		config,
+		toastData: {},
 		showSpinner: false,
 		messagesSpinner: []
 	},
@@ -41,6 +42,8 @@ const app = new Vue({
 	},
 	mounted() {
 		this.$eventbus.$on("initContract", this.initContract);
+		this.$eventbus.$on("alert", data => this.toastData = data);
+
 		this.$eventbus.$on("showSpinner", messages => {
 			this.messagesSpinner = messages;
 			this.showSpinner = true;
@@ -73,8 +76,6 @@ const app = new Vue({
 				if (artifact) {
 					resolve(artifact);
 				} else {
-					console.log(artifact, "hola d");
-
 					fetch(this.config.contractUri)
 						.then(res => res.json())
 						.then(json => {

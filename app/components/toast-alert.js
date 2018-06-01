@@ -5,6 +5,11 @@ let ToastAlert = Vue.component("toast-alert", {
 							{{ message }}
 				</div>`,
 	props: {
+		data: {
+			type: Object,
+			required: false,
+			default() { return {}; }
+		},
 		timeout: {
 			type: Number,
 			default: 3000
@@ -26,13 +31,12 @@ let ToastAlert = Vue.component("toast-alert", {
 			}
 		}
 	},
-	created() {
-		this.$eventbus.$on("alert", this.alertHandler);
+	watch: {
+		data: function({ type, message }) {
+			if (this.types.indexOf(type) !== -1) this.alert(type, message);
+		}
 	},
 	methods: {
-		alertHandler({ type, message }) {
-			if (this.types.indexOf(type) !== -1) this.alert(type, message);
-		},
 		alert(type, message) {
 			this.type = `sb-toast-${ type }`;
 			this.message = message;
