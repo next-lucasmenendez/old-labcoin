@@ -644,4 +644,12 @@ h6, .sb-h6 {
 .fade-enter, .fade-leave-active {
   opacity: 0; }
 
+@keyframes fade {
+  0% {
+    opacity: 1; }
+  50% {
+    opacity: 0; }
+  100% {
+    opacity: 1; } }
+
 /*# sourceMappingURL=main.css.map */
