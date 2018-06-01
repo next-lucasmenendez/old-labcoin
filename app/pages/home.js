@@ -1,6 +1,10 @@
 const Home = Vue.component("home", {
 	template: 	`<section class="sb-padding-top-4 sb-padding-4 sb-text-center">
-					<tokens-counter :count="tokens" :label="message" :color="this.tokens > 0 ? 'sb-counter-aqua' : 'sb-counter-red'"></tokens-counter>
+					<tokens-counter :count="tokens" :label="message" :color="color"></tokens-counter>
+
+					<small v-if="pendings" class="sb-text-center sb-text-yellow">
+						Transacción pendiente de confirmar
+					</small>
 
 					<hr class="sb-hr sb-margin-top-3 sb-margin-bottom-3">
 
@@ -18,30 +22,41 @@ const Home = Vue.component("home", {
 		return {
 			tokens: 0,
 			message: "Tokens disponibles",
-			messages: [
-				{ second: 1, text: "Connecting" },
-				{ second: 2, text: "Making money" }
-			]
+			color: "sb-counter-aqua",
+			pendings: false
 		}
 	},
 	created() {
 		this.$eventbus.$emit("initContract");
-		this.$eventbus.$on("contractReady", this.updateBalance);
+		this.$eventbus.$on("contractReady", this.loop);
+	},
+	mounted() {
+		this.pendings = this.$storage.get("pendingTransactions");
+	},
+	watch: {
+		tokens(newVal) {
+			this.color = (newVal > 0) ? ((this.pendings > 0) ? 'sb-counter-yellow' : 'sb-counter-aqua') : 'sb-counter-red';
+		},
+		pendings(newVal) {
+			this.color = (newVal > 0) ? 'sb-counter-yellow' : ((this.tokens > 0) ? 'sb-counter-aqua' : 'sb-counter-red');
+		}
 	},
 	methods: {
+		loop() {
+			setInterval(this.update, 1000);
+		},
 		/** 
-			updateBalance talks to contract instance to get current
+			update talks to contract instance to get current
 			user account token balance
 		*/
-		updateBalance() {
-			this.tokens = this.$instance.balanceOf(this.$web3.eth.defaultAccount).toNumber();
-			let interval = setInterval(() => {
-				try {
-					let tokens = this.$instance.balanceOf(this.$web3.eth.defaultAccount).toNumber();
-					if (tokens != this.tokens) this.tokens = tokens;
-				} catch(e) { console.error(e); }
-			}, 3000);
-			
+		update() {
+			try {
+				let tokens = this.$instance.balanceOf(this.$web3.eth.defaultAccount).toNumber();
+				if (tokens != this.tokens) {
+					this.tokens = tokens;
+					this.$storage.set("pendingTransactions", false);
+				}
+			} catch(e) { console.error(e); }
 		}
 	},
 	components: {

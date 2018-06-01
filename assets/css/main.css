@@ -81,6 +81,9 @@ pre, .code {
 .sb-text-red {
   color: #ff0054 !important; }
 
+.sb-text-yellow {
+  color: #FFED93 !important; }
+
 .sb-text-left {
   text-align: left; }
 
@@ -580,25 +583,40 @@ h6, .sb-h6 {
     color: #2dcccd;
     font-size: 1.8em; }
   .sb-counter.sb-counter-aqua span {
-    border-color: #2dcccd; }
+    border-color: #2dcccd !important;
+    color: #2dcccd !important; }
   .sb-counter.sb-counter-aqua label {
-    color: #2dcccd; }
+    color: #2dcccd !important; }
   .sb-counter.sb-counter-blue span {
-    border-color: #1973b8; }
+    border-color: #1973b8 !important;
+    color: #1973b8 !important; }
   .sb-counter.sb-counter-blue label {
-    color: #1973b8; }
+    color: #1973b8 !important; }
   .sb-counter.sb-counter-purple span {
-    border-color: #8f7ae5; }
+    border-color: #8f7ae5 !important;
+    color: #8f7ae5 !important; }
   .sb-counter.sb-counter-purple label {
-    color: #8f7ae5; }
+    color: #8f7ae5 !important; }
   .sb-counter.sb-counter-pink span {
-    border-color: #c569b9; }
+    border-color: #c569b9 !important;
+    color: #c569b9 !important; }
   .sb-counter.sb-counter-pink label {
-    color: #c569b9; }
+    color: #c569b9 !important; }
   .sb-counter.sb-counter-black span {
-    border-color: #000000; }
+    border-color: #000000 !important;
+    color: #000000 !important; }
   .sb-counter.sb-counter-black label {
-    color: #000000; }
+    color: #000000 !important; }
+  .sb-counter.sb-counter-yellow span {
+    border-color: #FFED93 !important;
+    color: #FFED93 !important; }
+  .sb-counter.sb-counter-yellow label {
+    color: #FFED93 !important; }
+  .sb-counter.sb-counter-red span {
+    border-color: #ff0054 !important;
+    color: #ff0054 !important; }
+  .sb-counter.sb-counter-red label {
+    color: #ff0054 !important; }
 
 .sb-toast {
   display: inline-block;

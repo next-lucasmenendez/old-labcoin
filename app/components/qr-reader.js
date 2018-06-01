@@ -1,9 +1,7 @@
 const QRReader = Vue.component("qr-reader", {
 	template:	`<div class="sb-inline-block" :style="containerStyles">
 					<p class="sb-text-gray" :style="messageStyle">No camera detected.</p>
-					<div :style="videoStyles">
-						<video autoplay playsinline muted></video>
-					</div>
+					<video :style="videoStyles" autoplay playsinline muted></video>
 				</div>`,
 	mounted() {
 		this.video = this.$el.querySelector("video");
