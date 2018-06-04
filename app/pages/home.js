@@ -73,9 +73,9 @@ const Home = Vue.component("home", {
 							this.pendings.splice(index, 1);
 							this.$storage.set("pendingTransactions", this.pendings);
 
-							let purchases = this.$storage.get("purchases");
+							let purchases = this.$storage.get("confirmedTransactions");
 							purchases.push(pending);
-							this.$storage.set("purchases", purchases);
+							this.$storage.set("confirmedTransactions", purchases);
 						}
 						return
 					});
