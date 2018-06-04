@@ -28,7 +28,7 @@ const Scan = Vue.component("scan", {
 				let transaction;
 				try {
 					transaction = JSON.parse(rawTransaction);
-				} catch() { return; }
+				} catch (e) { return; }
 
 				let keys = Object.keys(transaction).filter(field => this.requiredFields.indexOf(field) != -1);
 				if (keys.length == this.requiredFields.length) {
