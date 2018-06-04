@@ -28,30 +28,29 @@ const Scan = Vue.component("scan", {
 				let transaction;
 				try {
 					transaction = JSON.parse(rawTransaction);
-				} catch(err) {
-					console.error(err);
-					this.$eventbus.$emit("alert", {
-						type: "danger",
-						message: "Bad formated product."
-					});
-				}
+				} catch { return; }
 
 				let keys = Object.keys(transaction).filter(field => this.requiredFields.indexOf(field) != -1);
 				if (keys.length == this.requiredFields.length) {
 					transaction.standAddress = `${ this.config.addressPrefix }${ transaction.standAddress }`;
-					this.transaction = transaction;
+
+					let purchases = this.$storage.get("purchases") || [];
+					if (purchases.indexOf(transaction.standAddress) != -1) {
+						this.transaction = transaction;
+					} else {
+						this.$eventbus.$emit("alert", {
+							type: "warning",
+							message: "Ya has comprado este producto!"
+						});
+					}
 				} else {
 					console.error(`Bad formated product: Required ${ this.requiredFields }, got ${ keys }`);
-					this.$eventbus.$emit("alert", {
-						type: "danger",
-						message: "Bad formated product."
-					});	
 				}
 			}
 		},
 		payHandler(data, success) {
-			let type = success ? "success" : "warning";
-			let message = success ? `Genial! Acabas de comprar: '${ this.transaction.productName }'` : data.message; 
+			let type = "warning";
+			let message = success ? `Genial! Transacción enviada.` : data.message; 
 
 			this.$eventbus.$emit("alert", { type, message });
 			this.transaction = null;

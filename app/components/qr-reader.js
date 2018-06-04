@@ -10,6 +10,7 @@ const QRReader = Vue.component("qr-reader", {
 		this.startScanning();
 
         this.$parent.$on("closeCamera", this.stopScanning);
+        this.$parent.$on("startCamera", this.startScanning);
 	},
 	data() {
 		return {
@@ -53,9 +54,11 @@ const QRReader = Vue.component("qr-reader", {
 			});
 
 			this.loop = setInterval(() => {
-				this.decoder.decodeFromImage(this.webcam.shot(), (err, res) => {
-					if (!err && res) this.$parent.$emit("productScanned", res);
-				});
+				try {
+					this.decoder.decodeFromImage(this.webcam.shot(), (err, res) => {
+						if (!err && res) this.$parent.$emit("productScanned", res);
+					});
+				} catch {}
 			}, 500);
 		},
 		stopScanning() {

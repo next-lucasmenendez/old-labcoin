@@ -37,6 +37,11 @@ const app = new Vue({
 			this.$web3.eth.defaultAccount = me.address;
 			this.$web3.personal.unlockAccount(me.address, me.password);
 		}
+
+		let w = new Worker("app/workers/demo.js");
+		w.onmessage = (msg) => {
+			console.log(msg);
+		}
 	},
 	mounted() {
 		this.$eventbus.$on("initContract", this.initContract);

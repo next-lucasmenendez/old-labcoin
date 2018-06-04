@@ -34,7 +34,7 @@ const PayPopup = Vue.component("pay-popup", {
 						pendingTransactions.push(hash);
 						this.$storage.set("pendingTransactions", pendingTransactions);
 
-						this.$parent.$emit("payCompleted", this.transaction);	
+						this.$parent.$emit("payCompleted", this.transaction);
 					} else {
 						this.$parent.$emit("payCanceled", { message: "Error perfoming transaction." });	
 					}

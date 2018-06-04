@@ -29,7 +29,7 @@ const Waiting = Vue.component("waiting", {
 				ether: {
 					title: "Hola!",
 					process: "Estamos <span class='sb-text-aqua'>transfiriendo ETHER a tu cuenta de LabCoins para que puedas hacer transacciones.</span>",
-					info: "Este proceso <span class='sb-text-aqua sb-block'>puede tardar hata 1 minuto,</span> pero mientras puedes seguir usando el movil normalmente.",
+					info: "Este proceso <span class='sb-text-aqua sb-block'>puede tardar hasta 1 minuto,</span> pero mientras puedes seguir usando el movil normalmente.",
 					graphic: 1,
 					status: "Transfiriendo ETHER"
 				},

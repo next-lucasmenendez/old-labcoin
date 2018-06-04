@@ -45,12 +45,10 @@ const Home = Vue.component("home", {
 	methods: {
 		loop() {
 			this.update();
-			this.checkPendings();
 
 			setInterval(() => {
 				this.update();
-				this.checkPendings();
-			}, 5000);
+			}, 10000);
 		},
 		/** 
 			update talks to contract instance to get current
@@ -61,6 +59,7 @@ const Home = Vue.component("home", {
 				let tokens = this.$instance.balanceOf(this.$web3.eth.defaultAccount).toNumber();
 				if (tokens != this.tokens) {
 					this.tokens = tokens;
+					this.checkPendings();
 				}
 			} catch(e) { console.error(e); }
 		},
@@ -73,7 +72,12 @@ const Home = Vue.component("home", {
 						if (!err && data.blockNumber) {
 							this.pendings.splice(index, 1);
 							this.$storage.set("pendingTransactions", this.pendings);
+
+							let purchases = this.$storage.get("purchases");
+							purchases.push(pending);
+							this.$storage.set("purchases", purchases);
 						}
+						return
 					});
 				});
 			}
