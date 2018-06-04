@@ -18,13 +18,14 @@ const PayPopup = Vue.component("pay-popup", {
 	methods: {
 		payIt() {
 			let data = JSON.stringify(this.transaction);
-			let ok = this.$instance.spendToken(this.transaction.standAddress, parseInt(this.transaction.productPrice), data);
+			let hash = this.$instance.spendToken(this.transaction.standAddress, parseInt(this.transaction.productPrice), data);
 
-			if (ok) {
-				this.$storage.set("pendingTransactions", true);
-				setTimeout(() => {
-					this.$parent.$emit("payCompleted", this.transaction);	
-				}, 500); 
+			if (hash) {
+				let pendingTransactions = this.$storage.get("pendingTransactions") || [];
+				pendingTransactions.push(hash);
+				this.$storage.set("pendingTransactions", pendingTransactions);
+
+				this.$parent.$emit("payCompleted", this.transaction);	
 			} else {
 				this.$parent.$emit("payCanceled", { message: "Error perfoming transaction." });	
 			}

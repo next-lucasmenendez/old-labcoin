@@ -24,27 +24,29 @@ const Scan = Vue.component("scan", {
 	},
 	methods: {
 		transactionHandler(rawTransaction) {
-			let transaction;
-			try {
-				transaction = JSON.parse(rawTransaction);
-			} catch(err) {
-				console.error(err);
-				this.$eventbus.$emit("alert", {
-					type: "danger",
-					message: "Bad formated product."
-				});
-			}
+			if (rawTransaction) {
+				let transaction;
+				try {
+					transaction = JSON.parse(rawTransaction);
+				} catch(err) {
+					console.error(err);
+					this.$eventbus.$emit("alert", {
+						type: "danger",
+						message: "Bad formated product."
+					});
+				}
 
-			let keys = Object.keys(transaction).filter(field => this.requiredFields.indexOf(field) != -1);
-			if (keys.length == this.requiredFields.length) {
-				transaction.standAddress = `${ this.config.addressPrefix }${ transaction.standAddress }`;
-				this.transaction = transaction;
-			} else {
-				console.error(`Bad formated product: Required ${ this.requiredFields }, got ${ keys }`);
-				this.$eventbus.$emit("alert", {
-					type: "danger",
-					message: "Bad formated product."
-				});	
+				let keys = Object.keys(transaction).filter(field => this.requiredFields.indexOf(field) != -1);
+				if (keys.length == this.requiredFields.length) {
+					transaction.standAddress = `${ this.config.addressPrefix }${ transaction.standAddress }`;
+					this.transaction = transaction;
+				} else {
+					console.error(`Bad formated product: Required ${ this.requiredFields }, got ${ keys }`);
+					this.$eventbus.$emit("alert", {
+						type: "danger",
+						message: "Bad formated product."
+					});	
+				}
 			}
 		},
 		payHandler(data, success) {

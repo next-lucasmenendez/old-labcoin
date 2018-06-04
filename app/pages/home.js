@@ -2,8 +2,8 @@ const Home = Vue.component("home", {
 	template: 	`<section class="sb-padding-top-4 sb-padding-4 sb-text-center">
 					<tokens-counter :count="tokens" :label="message" :color="color"></tokens-counter>
 
-					<small v-if="pendings" class="sb-text-center sb-text-yellow">
-						Transacción pendiente de confirmar
+					<small v-if="pendings.length" class="sb-text-center sb-text-yellow">
+						{{ pendings.length > 1 ? 'Transacciones pendientes de confirmar' : 'Transacción pendiente de confirmar' }}
 					</small>
 
 					<hr class="sb-hr sb-margin-top-3 sb-margin-bottom-3">
@@ -23,27 +23,28 @@ const Home = Vue.component("home", {
 			tokens: 0,
 			message: "Tokens disponibles",
 			color: "sb-counter-aqua",
-			pendings: false
+			pendings: this.$storage.get("pendingTransactions") || []
 		}
 	},
 	created() {
 		this.$eventbus.$emit("initContract");
 		this.$eventbus.$on("contractReady", this.loop);
 	},
-	mounted() {
-		this.pendings = this.$storage.get("pendingTransactions");
-	},
 	watch: {
-		tokens(newVal) {
-			this.color = (newVal > 0) ? ((this.pendings > 0) ? 'sb-counter-yellow' : 'sb-counter-aqua') : 'sb-counter-red';
+		tokens(newTokens) {
+			this.color = (newTokens > 0) ? ((this.pendings > 0) ? 'sb-counter-yellow' : 'sb-counter-aqua') : 'sb-counter-red';
 		},
-		pendings(newVal) {
-			this.color = (newVal > 0) ? 'sb-counter-yellow' : ((this.tokens > 0) ? 'sb-counter-aqua' : 'sb-counter-red');
+		pendings(newPendings) {
+			if (newPendings > 0) {
+				this.color = "sb-counter-yellow";
+			} else {
+				this.color = this.tokens > 0 ? "sb-counter-aqua" : "sb-counter-red";
+			}
 		}
 	},
 	methods: {
 		loop() {
-			setInterval(this.update, 1000);
+			setInterval(this.update, 2000);
 		},
 		/** 
 			update talks to contract instance to get current
@@ -54,9 +55,20 @@ const Home = Vue.component("home", {
 				let tokens = this.$instance.balanceOf(this.$web3.eth.defaultAccount).toNumber();
 				if (tokens != this.tokens) {
 					this.tokens = tokens;
-					this.$storage.set("pendingTransactions", false);
+					this.checkPendings();
 				}
 			} catch(e) { console.error(e); }
+		},
+		checkPendings() {
+			this.pendings = this.$storage.get("pendingTransactions");
+					
+			if (this.pendings.length) {
+				this.pendings.forEach((pending, index) => {
+					this.$web3.eth.getTransactionReceipt(pending, (err, data) => {
+						if (!err && data.blockNumber) this.pendings.splice(index, 1);
+					});
+				});
+			}
 		}
 	},
 	components: {
