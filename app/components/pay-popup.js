@@ -16,19 +16,39 @@ const PayPopup = Vue.component("pay-popup", {
 		}
 	},
 	methods: {
+		unlock() {
+			return new Promise((resolve, reject) => {
+				let me = this.$storage.get("user");
+				let unlocked = this.$web3.personal.unlockAccount(me.address, me.password);
+				if (!unlocked) reject(); else resolve();
+			});
+		},
 		payIt() {
-			let data = JSON.stringify(this.transaction);
-			let hash = this.$instance.spendToken(this.transaction.standAddress, parseInt(this.transaction.productPrice), data);
+			this.unlock()
+				.then(() => {
+					let data = JSON.stringify(this.transaction);
+					let hash = this.$instance.spendToken(this.transaction.standAddress, parseInt(this.transaction.productPrice), data);
 
-			if (hash) {
-				let pendingTransactions = this.$storage.get("pendingTransactions") || [];
-				pendingTransactions.push(hash);
-				this.$storage.set("pendingTransactions", pendingTransactions);
+					if (hash) {
+						let pendingTransactions = this.$storage.get("pendingTransactions") || [];
+						pendingTransactions.push(hash);
+						this.$storage.set("pendingTransactions", pendingTransactions);
 
-				this.$parent.$emit("payCompleted", this.transaction);	
-			} else {
-				this.$parent.$emit("payCanceled", { message: "Error perfoming transaction." });	
-			}
+						this.$parent.$emit("payCompleted", this.transaction);	
+					} else {
+						this.$parent.$emit("payCanceled", { message: "Error perfoming transaction." });	
+					}
+				})
+				.catch(() => {
+					this.$storage.remove("user");
+					this.$storage.remove("artifact");
+
+					this.$eventbus.$emit("alert", {
+						type: "danger",
+						message: "User logged out."
+					});
+					Router.push({ name: "signup" })
+				});
 		},
 		cancel() {
 			this.$parent.$emit("payCanceled", { message: "Compra cancelada." });

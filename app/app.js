@@ -9,8 +9,6 @@ const app = new Vue({
 						<transition name="fade">
 							<router-view></router-view>
 						</transition>
-					
-						<fake-spinner :show="showSpinner" :messages="messagesSpinner"></fake-spinner>
 					</section>
 				</section>`,
 	router: Router,
@@ -98,7 +96,6 @@ const app = new Vue({
 	},
 	components: {
 		"topbar": Topbar,
-		"toast-alert": ToastAlert,
-		"fake-spinner": FakeSpinner
+		"toast-alert": ToastAlert
 	}
 });

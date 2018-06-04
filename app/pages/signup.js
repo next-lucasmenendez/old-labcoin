@@ -2,21 +2,19 @@ const SignUp = Vue.component("signup", {
 	template: 	`<section class="sb-grid sb-justify-center sb-align-center sb-wrap sb-margin-top-4 sb-margin-bottom-4">
 					<div class="sb-col-10 sb-text-center">
 						<div class="sb-margin-top-4 sb-margin-bottom-4 sb-padding-top-2 sb-padding-bottom-2">
-							<h2 class="sb-h4 sb-text-aqua">Crea tu nickname</h2>
-							<hr class="sb-bg sb-margin-top-3 sb-margin-bottom-3">
-							<p class="sb-text-white">Crea tu nickname para el evento y recibe <span class="sb-text-aqua">LabCoin</span>'s gratis para conseguir regalos en los diferentes stands.</p>
+							<h2 class="sb-h4 sb-text-aqua sb-margin-bottom-3">Crea tu nickname</h2>
+							<p class="sb-text-white sb-margin-top-3">Crea tu nickname para el evento y recibe <span class="sb-text-aqua">LabCoin</span>'s gratis para conseguir regalos en los diferentes stands.</p>
 						</div>
 
 						<signup-form></signup-form>
+						
+						<fake-spinner :show="spinner"></fake-spinner>
 					</div>
 				</section>`,
 	data() {
 		return { 
 			config,
-			messages: [
-				{ second: 2, text: "Connecting" },
-				{ second: 4, text: "Getting contract" },
-			]
+			spinner: false
 		}
 	},
 	mounted() {
@@ -27,6 +25,12 @@ const SignUp = Vue.component("signup", {
 		this.$on("signin", this.siginHandler);
 	},
 	methods: {
+		showSpinner() {
+			return new Promise((resolve, reject) => {
+				this.spinner = true;
+				setTimeout(resolve, 200);
+			});
+		},
 		/** 
 			signinHandler generates user profile with alias received.
 			Then call to tokenRequest to get ether and then talk with
@@ -34,22 +38,24 @@ const SignUp = Vue.component("signup", {
 		*/
 		siginHandler(data) {
 			if (data.username) {
-				data.password = this.generatePassword();
-				data.address = this.$web3.personal.newAccount(data.password);
-				this.$web3.eth.defaultAccount = data.address;
+				this.showSpinner().then(() => {
+					data.password = this.generatePassword();
+					data.address = this.$web3.personal.newAccount(data.password);
+					this.$web3.eth.defaultAccount = data.address;
 
-				this.$storage.set("user", data);
+					this.$storage.set("user", data);
 
-				this.tokensRequest(data.address)
-					.then(() => Router.push({ name: "waiting" }))
-					.catch(err => {
-						console.error(err);
-						this.$eventbus.$emit("hideSpinner");
-						this.$eventbus.$emit("alert", {
-							type: "danger",
-							message: "Error creating account for this user."
+					this.tokensRequest(data.address)
+						.then(() => Router.push({ name: "waiting" }))
+						.catch(err => {
+							console.error(err);
+							this.$eventbus.$emit("hideSpinner");
+							this.$eventbus.$emit("alert", {
+								type: "danger",
+								message: "Error creating account for this user."
+							});
 						});
-					});
+				});
 			}
 		},
 		/**
@@ -75,6 +81,7 @@ const SignUp = Vue.component("signup", {
 		}
 	},
 	components: {
-		"signup-form": SignupForm
+		"signup-form": SignupForm,
+		"fake-spinner": FakeSpinner
 	}
 })
