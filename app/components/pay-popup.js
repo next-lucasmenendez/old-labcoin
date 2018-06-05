@@ -19,7 +19,7 @@ const PayPopup = Vue.component("pay-popup", {
 		showSpinner() {
 			return new Promise((resolve, reject) => {
 				this.$eventbus.$emit("showSpinner");
-				setTimeout(resolve, 300);
+				setTimeout(resolve, 500);
 			});
 		},
 		unlock() {
