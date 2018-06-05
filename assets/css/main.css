@@ -419,7 +419,8 @@ h6, .sb-h6 {
 .sb-fixed-top {
   position: fixed;
   top: 0;
-  left: 0; }
+  left: 0;
+  z-index: 1000; }
 
 .sb-zindex-0 {
   z-index: 0; }

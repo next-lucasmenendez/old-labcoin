@@ -3,7 +3,7 @@ const app = new Vue({
 	template: 	`<section id="labcoin">
 					<topbar></topbar>
 
-					<section class="sb-relative">					
+					<section class="sb-relative sb-margin-top-4 sb-padding-top-4">					
 						<toast-alert :data="toastData"></toast-alert>
 					
 						<transition name="fade">

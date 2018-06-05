@@ -1,5 +1,5 @@
 let Topbar = Vue.component("topbar", {
-	template:	`<nav class="sb-width-100 sb-bg-black sb-text-white">
+	template:	`<nav class="sb-width-100 sb-bg-black sb-text-white sb-fixed-top">
 					<div class="sb-grid sb-justify-between sb-align-center">
 						<div class="sb-col-auto sb-padding-2">
 							<router-link :to="{ name: 'home' }"><img class="logo-event" v-bind:src="logoevent"></router-link>
