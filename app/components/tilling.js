@@ -36,32 +36,32 @@ let Tilling = Vue.component("tilling", {
 								<polygon :fill="stands.four.done ? '#49a5e6' : '#bdbdba'" points="32 0 32 32 64 32 32 0" />
 							</svg>
 						</div>
-						<div class="sb-inline-block sb-width-20" style="margin-top: -4px">
+						<div class="sb-inline-block sb-width-20" style="margin-top: -5px">
 							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
 								<polyline :fill="stands.five.done ? '#2dcccd' : '#d2d1ce'" points="64 0 0 0 0 64" />
 								<polyline :fill="stands.five.done ? '#49a5e6' : '#bdbdba'" points="32 64 64 64 64 0 0 64" />
 								<path :fill="stands.five.done ? '#8f7ae5' : '#64615e'" d="M49.39,54.9h0a9.08,9.08,0,0,0-9.08-9.08h0a9.08,9.08,0,0,0-6.42,15.5h0A9.08,9.08,0,0,0,49.39,54.9Z" />
 							</svg>
 						</div>
-						<div class="sb-inline-block sb-width-20" style="margin-top: -4px">
+						<div class="sb-inline-block sb-width-20" style="margin-top: -5px">
 							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
 								<path :fill="stands.six.done ? '#004481' : '#ffffff'" d="M0,0H64a0,0,0,0,1,0,0V64a0,0,0,0,1,0,0h0A64,64,0,0,1,0,0V0A0,0,0,0,1,0,0Z" />
 								<polygon :fill="stands.six.done ? '#2dcccd' : '#d2d1ce'" points="64 31 64 0 33 0 64 31" />
 							</svg>
 						</div>
-						<div class="sb-inline-block sb-width-20" style="margin-top: -4px">
+						<div class="sb-inline-block sb-width-20" style="margin-top: -5px">
 							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
 								<polygon :fill="stands.seven.done ? '#2dcccd' : '#d2d1ce'" points="64 64 64 0 0 0 0 31 31 64 64 64" />
 								<path :fill="stands.seven.done ? '#8f7ae5' : '#64615e'" d="M32,41.51h0a9.08,9.08,0,0,0-9.08-9.08h0a9.08,9.08,0,0,0-6.42,15.5h0A9.08,9.08,0,0,0,32,41.51Z" />
 							</svg>
 						</div>
-						<div class="sb-inline-block sb-width-20" style="margin-top: -4px">
+						<div class="sb-inline-block sb-width-20" style="margin-top: -5px">
 							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
 								<polygon :fill="stands.eight.done ? '#004481' : '#ffffff'" points="0 32 0 64 64 64 64 64 32 32 32 64 0 32" />
 								<polygon :fill="stands.eight.done ? '#004481' : '#ffffff'" points="64 0 0 0 0 32 32 32 64 32 64 0" />
 							</svg>
 						</div>
-						<div class="sb-inline-block sb-width-20" style="margin-top: -4px">
+						<div class="sb-inline-block sb-width-20" style="margin-top: -5px">
 							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
 								<rect :fill="stands.eight.done ? '#004481' : '#ffffff'" width="64" height="64" />
 								<rect :fill="stands.eight.done ? '#8f7ae5' : '#64615e'" width="32" height="64" />
