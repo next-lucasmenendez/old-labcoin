@@ -34,8 +34,8 @@ const Scan = Vue.component("scan", {
 				if (keys.length == this.requiredFields.length) {
 					transaction.standAddress = `${ this.config.addressPrefix }${ transaction.standAddress }`;
 
-					let purchases = this.$storage.get("confirmedTransactions") || [];
-					if (purchases.indexOf(transaction.standAddress) != -1) {
+					let confirmedTransactions = this.$storage.get("confirmedTransactions") || [];
+					if (confirmedTransactions.indexOf(transaction.standAddress) == -1) {
 						this.transaction = transaction;
 					} else {
 						this.$eventbus.$emit("alert", {

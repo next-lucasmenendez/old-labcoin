@@ -28,7 +28,7 @@ const QRReader = Vue.component("qr-reader", {
 				top: "50%",
 				left: "0",
 				width: "100%",
-				height: "auto",
+				height: "100%",
 				textAlign: "center",
 				transform: "translateY(-50%)"
 			},

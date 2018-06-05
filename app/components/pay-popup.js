@@ -16,38 +16,60 @@ const PayPopup = Vue.component("pay-popup", {
 		}
 	},
 	methods: {
+		showSpinner() {
+			return new Promise((resolve, reject) => {
+				this.$eventbus.$emit("showSpinner");
+				setTimeout(resolve, 300);
+			});
+		},
 		unlock() {
 			return new Promise((resolve, reject) => {
 				let me = this.$storage.get("user");
 				let unlocked = this.$web3.personal.unlockAccount(me.address, me.password);
-				if (!unlocked) reject(); else resolve();
+				if (unlocked) resolve();
+				else reject();
 			});
 		},
+		locked() {
+			this.$eventbus.$emit("hideSpinner");
+			this.$storage.remove("user");
+			this.$storage.remove("artifact");
+
+			this.$eventbus.$emit("alert", {
+				type: "danger",
+				message: "User logged out."
+			});
+			Router.push({ name: "signup" });
+		},
+		makeTransaction() {
+			return new Promise((resolve, reject) => {
+				let data = JSON.stringify(this.transaction);
+				let cost = parseInt(this.transaction.productPrice);
+				let address = this.transaction.standAddress;
+				let hash = this.$instance.spendToken(address, cost, data);
+				if (hash) resolve(hash);
+				else reject();
+			});
+		},
+		emitTransaction(hash) {
+			this.transaction.hash = hash;
+
+			let pendingTransactions = this.$storage.get("pendingTransactions") || [];
+			pendingTransactions.push(this.transaction);
+			this.$storage.set("pendingTransactions", pendingTransactions);
+
+			this.$eventbus.$emit("hideSpinner");
+			this.$parent.$emit("payCompleted", this.transaction);
+		},
 		payIt() {
-			this.unlock()
-				.then(() => {
-					let data = JSON.stringify(this.transaction);
-					let hash = this.$instance.spendToken(this.transaction.standAddress, parseInt(this.transaction.productPrice), data);
-
-					if (hash) {
-						let pendingTransactions = this.$storage.get("pendingTransactions") || [];
-						pendingTransactions.push(hash);
-						this.$storage.set("pendingTransactions", pendingTransactions);
-
-						this.$parent.$emit("payCompleted", this.transaction);
-					} else {
-						this.$parent.$emit("payCanceled", { message: "Error perfoming transaction." });	
-					}
-				})
+			this.showSpinner()
+				.then(this.unlock)
+				.catch(this.locked)
+				.then(this.makeTransaction)
+				.then(this.emitTransaction)
 				.catch(() => {
-					this.$storage.remove("user");
-					this.$storage.remove("artifact");
-
-					this.$eventbus.$emit("alert", {
-						type: "danger",
-						message: "User logged out."
-					});
-					Router.push({ name: "signup" })
+					this.$eventbus.$emit("hideSpinner");
+					this.$parent.$emit("payCanceled", { message: "Error perfoming transaction." });
 				});
 		},
 		cancel() {

@@ -7,8 +7,6 @@ const SignUp = Vue.component("signup", {
 						</div>
 
 						<signup-form></signup-form>
-						
-						<fake-spinner :show="spinner"></fake-spinner>
 					</div>
 				</section>`,
 	data() {
@@ -27,7 +25,7 @@ const SignUp = Vue.component("signup", {
 	methods: {
 		showSpinner() {
 			return new Promise((resolve, reject) => {
-				this.spinner = true;
+				this.$eventbus.$emit("showSpinner");
 				setTimeout(resolve, 200);
 			});
 		},
@@ -46,7 +44,10 @@ const SignUp = Vue.component("signup", {
 					this.$storage.set("user", data);
 
 					this.tokensRequest(data.address)
-						.then(() => Router.push({ name: "waiting" }))
+						.then(() => {
+							this.$eventbus.$emit("hideSpinner");
+							Router.push({ name: "waiting" });
+						})
 						.catch(err => {
 							console.error(err);
 							this.$eventbus.$emit("hideSpinner");
@@ -81,7 +82,6 @@ const SignUp = Vue.component("signup", {
 		}
 	},
 	components: {
-		"signup-form": SignupForm,
-		"fake-spinner": FakeSpinner
+		"signup-form": SignupForm
 	}
 })

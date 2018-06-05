@@ -8,7 +8,7 @@ const Home = Vue.component("home", {
 
 					<hr class="sb-hr sb-margin-top-3 sb-margin-bottom-3">
 
-					<tilling :count="tokens"></tilling>
+					<tilling :confirmedStands="confirmed"></tilling>
 
 					<router-link tag="button" class="sb-button sb-button-large sb-width-70 sb-margin-top-4 sb-margin-bottom-2" :to="{ name: 'scan' }">
 						Escanear QR
@@ -23,7 +23,8 @@ const Home = Vue.component("home", {
 			tokens: 0,
 			message: "Tokens disponibles",
 			color: "sb-counter-aqua",
-			pendings: this.$storage.get("pendingTransactions") || []
+			pendings: this.$storage.get("pendingTransactions") || [],
+			confirmed: this.$storage.get("confirmedTransactions") || []
 		}
 	},
 	created() {
@@ -32,10 +33,10 @@ const Home = Vue.component("home", {
 	},
 	watch: {
 		tokens(newTokens) {
-			this.color = (newTokens > 0) ? ((this.pendings > 0) ? 'sb-counter-yellow' : 'sb-counter-aqua') : 'sb-counter-red';
+			this.color = (newTokens > 0) ? ((this.pendings.length > 0) ? 'sb-counter-yellow' : 'sb-counter-aqua') : 'sb-counter-red';
 		},
 		pendings(newPendings) {
-			if (newPendings > 0) {
+			if (newPendings.length > 0) {
 				this.color = "sb-counter-yellow";
 			} else {
 				this.color = this.tokens > 0 ? "sb-counter-aqua" : "sb-counter-red";
@@ -64,18 +65,18 @@ const Home = Vue.component("home", {
 			} catch(e) { console.error(e); }
 		},
 		checkPendings() {
-			this.pendings = this.$storage.get("pendingTransactions");
+			this.pendings = this.$storage.get("pendingTransactions") || [];
+			this.confirmed = this.$storage.get("confirmedTransactions") || [];
 					
 			if (this.pendings.length) {
 				this.pendings.forEach((pending, index) => {
-					this.$web3.eth.getTransactionReceipt(pending, (err, data) => {
+					this.$web3.eth.getTransactionReceipt(pending.hash, (err, data) => {
 						if (!err && data.blockNumber) {
 							this.pendings.splice(index, 1);
 							this.$storage.set("pendingTransactions", this.pendings);
 
-							let purchases = this.$storage.get("confirmedTransactions");
-							purchases.push(pending);
-							this.$storage.set("confirmedTransactions", purchases);
+							this.confirmed.push(pending);
+							this.$storage.set("confirmedTransactions", this.confirmed);
 						}
 						return
 					});

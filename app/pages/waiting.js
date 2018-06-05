@@ -78,7 +78,7 @@ const Waiting = Vue.component("waiting", {
 					this.current = this.states.coins;
 					clearInterval(interval);
 				}
-			}, 3000);
+			}, 5000);
 		},
 		checkAutoclaim() {
 			try {
@@ -99,7 +99,7 @@ const Waiting = Vue.component("waiting", {
 					Router.push({ name: "home" });
 					clearInterval(interval);
 				}
-			}, 3000);
+			}, 5000);
 		}
 	},
 	components: {
