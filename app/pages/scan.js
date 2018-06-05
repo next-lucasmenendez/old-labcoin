@@ -9,7 +9,13 @@ const Scan = Vue.component("scan", {
 	data() {
 		return {
 			config,
-			requiredFields: [ "standAddress", "standName", "productName", "productPrice", "productThumbnail" ],
+			requiredFields: { 
+				sa: "standAddress", 
+				sn: "standName", 
+				pn: "productName", 
+				pp: "productPrice", 
+				pt: "productThumbnail"
+			},
 			transaction: null
 		}
 	},
@@ -23,15 +29,32 @@ const Scan = Vue.component("scan", {
 		next();
 	},
 	methods: {
-		transactionHandler(rawTransaction) {
-			if (rawTransaction) {
-				let transaction;
+		validateTransaction(rawTransaction) {
+			return new Promise((resolve, reject) => {
+				let newTransaction;
 				try {
-					transaction = JSON.parse(rawTransaction);
-				} catch (e) { return; }
+					newTransaction = JSON.parse(rawTransaction);
+				} catch (e) { 
+					reject(e);
+				}
 
-				let keys = Object.keys(transaction).filter(field => this.requiredFields.indexOf(field) != -1);
-				if (keys.length == this.requiredFields.length) {
+				let required = Object.keys(this.requiredFields);
+				let found = Object.keys(newTransaction).filter(field => required.indexOf(field) != -1);
+				if (found.length == required.length) {
+					let transaction = {}
+					Object.keys(newTransaction).forEach(rawKey => {
+						let key = this.requiredFields[rawKey];
+						transaction[key] = newTransaction[rawKey];
+					});
+					resolve(transaction);
+				} else {
+					reject(`Bad formated product: Required ${ required }, got ${ found }`);
+				}
+			});
+		},
+		transactionHandler(rawTransaction) {
+			this.validateTransaction(rawTransaction)
+				.then(transaction => {
 					transaction.standAddress = `${ this.config.addressPrefix }${ transaction.standAddress }`;
 
 					let confirmedTransactions = this.$storage.get("confirmedTransactions") || [];
@@ -43,10 +66,8 @@ const Scan = Vue.component("scan", {
 							message: "Ya has comprado este producto!"
 						});
 					}
-				} else {
-					console.error(`Bad formated product: Required ${ this.requiredFields }, got ${ keys }`);
-				}
-			}
+				})
+				.catch(console.error);
 		},
 		payHandler(data, success) {
 			let type = "warning";

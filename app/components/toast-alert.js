@@ -22,7 +22,6 @@ let ToastAlert = Vue.component("toast-alert", {
 			type: "",
 			types: [ "success", "warning", "danger" ],
 			styleObject: {
-				position: "absolute",
 				display: "none",
 				top: 0,
 				left: 0,

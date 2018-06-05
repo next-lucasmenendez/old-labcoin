@@ -1,11 +1,12 @@
 const app = new Vue({
 	el: "#app",
 	template: 	`<section id="labcoin">
-					<topbar></topbar>
+					<div class="sb-fixed-top sb-width-100">
+						<topbar></topbar>
+						<toast-alert :data="toastData"></toast-alert>
+					</div>
 
 					<section class="sb-relative sb-margin-top-4 sb-padding-top-4">					
-						<toast-alert :data="toastData"></toast-alert>
-					
 						<transition name="fade">
 							<router-view></router-view>
 						</transition>
