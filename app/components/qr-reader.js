@@ -58,7 +58,7 @@ const QRReader = Vue.component("qr-reader", {
 					this.decoder.decodeFromImage(this.webcam.shot(), (err, res) => {
 						if (!err && res) this.$parent.$emit("productScanned", res);
 					});
-				} catch {}
+				} catch (e) { console.error(e); }
 			}, 500);
 		},
 		stopScanning() {
