@@ -62,15 +62,22 @@ const PayPopup = Vue.component("pay-popup", {
 			this.$parent.$emit("payCompleted", this.transaction);
 		},
 		payIt() {
-			this.showSpinner()
-				.then(this.unlock)
-				.catch(this.locked)
-				.then(this.makeTransaction)
-				.then(this.emitTransaction)
-				.catch(() => {
-					this.$eventbus.$emit("hideSpinner");
-					this.$parent.$emit("payCanceled", { message: "Error perfoming transaction." });
-				});
+			let confirmedTransactions = this.$storage.get("confirmedTransactions") || [];
+			let found = confirmedTransactions.find(item => item.standAddress == this.transaction.standAddress);
+			if (!found) {
+				this.showSpinner()
+					.then(this.unlock)
+					.catch(this.locked)
+					.then(this.makeTransaction)
+					.then(this.emitTransaction)
+					.catch(() => {
+						this.$eventbus.$emit("hideSpinner");
+						this.$parent.$emit("payCanceled", { message: "Error al enviar la transaction." });
+					});
+			} else {
+				this.$eventbus.$emit("hideSpinner");
+				this.$parent.$emit("payCanceled", { message: "Ya has comprado este producto!" });
+			}
 		},
 		cancel() {
 			this.$parent.$emit("payCanceled", { message: "Compra cancelada." });

@@ -65,7 +65,7 @@ const app = new Vue({
 						console.error(err);
 						this.$eventbus.$emit({
 							type: "danger",
-							message: "Error getting contract instance ;("
+							message: "Error descargando el contracto ;("
 						});
 					});
 			}
