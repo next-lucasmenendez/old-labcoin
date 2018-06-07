@@ -12,7 +12,7 @@ let ToastAlert = Vue.component("toast-alert", {
 		},
 		timeout: {
 			type: Number,
-			default: 6000
+			default: 3000
 		}
 	},
 	data() {
